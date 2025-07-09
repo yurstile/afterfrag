@@ -69,7 +69,7 @@ export default function PostDetailPage() {
         return
       }
 
-      const response = await fetch(`https://api.loryx.lol/posts/${postId}`, {
+      const response = await fetch(`https://app.afterfrag.com/posts/${postId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -97,7 +97,7 @@ export default function PostDetailPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/posts/${postId}`, {
+      const response = await fetch(`https://app.afterfrag.com/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
