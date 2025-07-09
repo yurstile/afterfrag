@@ -58,7 +58,7 @@ export default function EditProfilePage() {
         return
       }
 
-      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile`, {
+      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -88,7 +88,7 @@ export default function EditProfilePage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile`, {
+      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export default function EditProfilePage() {
       const formData = new FormData()
       formData.append("file", file)
 
-      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile-picture`, {
+      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile/picture`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -168,7 +168,7 @@ export default function EditProfilePage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile-picture`, {
+      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile/picture`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
