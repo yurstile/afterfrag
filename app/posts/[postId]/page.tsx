@@ -10,7 +10,6 @@ import { MessageSquare, ArrowLeft } from "lucide-react"
 import { PostCard } from "@/components/post-card"
 import { CommentSection } from "@/components/comment-section"
 import { useCurrentUser } from "@/hooks/use-current-user"
-import { Logo } from "@/components/logo"
 
 interface PostMedia {
   file_uuid: string
@@ -271,23 +270,36 @@ export default function PostDetailPage() {
                 Back
               </Button>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-secondary text-glow-secondary" />
-                <Logo size={28} />
+                <MessageSquare className="h-6 w-6 text-orange-600" />
+                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
               </div>
             </div>
             {communityName && (
               <Link href={`/f/${communityName}`}>
-                <span className="text-orange-600 font-semibold hover:underline">
-                  {communityName}
-                </span>
+                <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+                  View f/{communityName}
+                </Button>
               </Link>
             )}
           </div>
         </div>
       </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <PostCard post={post} onLike={handleLike} onUnlike={handleUnlike} onEdit={handleEdit} onDelete={handleDelete} />
-        <CommentSection post={post} onCommentCreated={handleCommentCreated} />
+
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-6">
+          {/* Post Detail */}
+          <PostCard
+            {...post}
+            community_name={communityName}
+            onLike={handleLike}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            isDetailView={true}
+          />
+
+          {/* Comments Section */}
+          <CommentSection postId={post.id} onCommentCreated={handleCommentCreated} />
+        </div>
       </main>
     </div>
   )

@@ -2,7 +2,6 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowLeft, MessageSquare } from "lucide-react"
-import { Logo } from "@/components/logo"
 
 export default function PrivacyPolicyPage() {
   return (
@@ -18,8 +17,8 @@ export default function PrivacyPolicyPage() {
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-secondary text-glow-secondary" />
-                <Logo size={28} />
+                <MessageSquare className="h-6 w-6 text-orange-600" />
+                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
               </div>
             </div>
           </div>

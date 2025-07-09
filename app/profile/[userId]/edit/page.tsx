@@ -15,7 +15,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { MessageSquare, ArrowLeft, Upload, Trash2, Plus, X, Loader2 } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
-import { Logo } from "@/components/logo"
 
 interface SocialLink {
   platform: string
@@ -302,8 +301,8 @@ export default function EditProfilePage() {
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-secondary text-glow-secondary" />
-                <Logo size={28} />
+                <MessageSquare className="h-6 w-6 text-orange-600" />
+                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
               </div>
             </div>
           </div>

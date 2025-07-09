@@ -10,7 +10,8 @@ const inter = Inter({ subsets: ["latin"] })
 // Update metadata
 export const metadata: Metadata = {
   title: "Afterfrag - Gaming Community Platform",
-  description: "Join the ultimate gaming community platform"
+  description: "Join the ultimate gaming community platform",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({

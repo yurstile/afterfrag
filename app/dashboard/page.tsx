@@ -16,7 +16,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { MessageSquare, Home, Users, ChevronDown, Settings, LogOut, ExternalLink, RefreshCw, Plus } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { PostCard } from "@/components/post-card"
-import { useThemeToggle } from "@/components/theme-provider"
 
 interface Community {
   id: number
@@ -54,7 +53,6 @@ export default function DashboardPage() {
   const [communitiesLoading, setCommunitiesLoading] = useState(true)
   const [resourcesOpen, setResourcesOpen] = useState(true)
   const [communitiesOpen, setCommunitiesOpen] = useState(true)
-  const { resolvedTheme, toggleTheme } = useThemeToggle();
 
   useEffect(() => {
     if (user) {
@@ -235,14 +233,6 @@ export default function DashboardPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={toggleTheme} className="flex items-center gap-2">
-                  {resolvedTheme === 'dark' ? (
-                    <span className="material-icons text-yellow-400">light_mode</span>
-                  ) : (
-                    <span className="material-icons text-blue-600">dark_mode</span>
-                  )}
-                  {resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-                </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href={`/profile/${user.user_id}`} className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />

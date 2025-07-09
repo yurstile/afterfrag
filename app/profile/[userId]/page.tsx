@@ -12,7 +12,6 @@ import { MessageSquare, ArrowLeft, User, Edit, ExternalLink, Calendar, Globe } f
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { formatDate } from "@/utils/date-utils"
 import { RecentActivityCard } from "@/components/recent-activity-card"
-import { Logo } from "@/components/logo"
 
 interface UserProfile {
   user_id: number
@@ -136,8 +135,8 @@ export default function UserProfilePage() {
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-secondary text-glow-secondary" />
-                <Logo size={28} />
+                <MessageSquare className="h-6 w-6 text-orange-600" />
+                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
               </div>
             </div>
             {isOwnProfile && (

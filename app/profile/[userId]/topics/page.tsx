@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { MessageSquare, ArrowLeft, Tag, Users } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
-import { Logo } from "@/components/logo"
 
 interface TopicSource {
   community_name: string
@@ -118,8 +117,8 @@ export default function UserTopicsPage() {
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-secondary text-glow-secondary" />
-                <Logo size={28} />
+                <MessageSquare className="h-6 w-6 text-orange-600" />
+                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
               </div>
             </div>
           </div>
