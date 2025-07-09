@@ -50,7 +50,7 @@ export default function CommentPage() {
         return
       }
 
-      const response = await fetch(`https://api.loryx.lol/comments/${commentId}`, {
+      const response = await fetch(`https://app.afterfrag.com/comments/${commentId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -74,7 +74,7 @@ export default function CommentPage() {
       const token = localStorage.getItem("access_token")
       if (!token || !comment) return
 
-      const response = await fetch(`https://api.loryx.lol/comments/${comment.id}/like`, {
+      const response = await fetch(`https://app.afterfrag.com/comments/${comment.id}/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
