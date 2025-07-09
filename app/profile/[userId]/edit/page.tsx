@@ -58,7 +58,7 @@ export default function EditProfilePage() {
         return
       }
 
-      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile`, {
+      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -88,7 +88,7 @@ export default function EditProfilePage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile`, {
+      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
