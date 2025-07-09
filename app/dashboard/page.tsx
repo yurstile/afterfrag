@@ -16,6 +16,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { MessageSquare, Home, Users, ChevronDown, Settings, LogOut, ExternalLink, RefreshCw, Plus } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { PostCard } from "@/components/post-card"
+import { getMediaUrl } from "@/utils/media-utils"
 
 interface Community {
   id: number
@@ -207,7 +208,7 @@ export default function DashboardPage() {
   // Safe fallbacks for user data
   const displayName = userProfile?.display_name || user?.display_name || user?.username || "User"
   const username = user?.username || "user"
-  const profilePictureUrl = userProfile?.profile_picture_url || user?.profile_picture_url
+  const profilePictureUrl = getMediaUrl(userProfile?.profile_picture_url || user?.profile_picture_url)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">

@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { ArrowLeft, Save, Upload, Trash2, Loader2 } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
+import { getMediaUrl } from "@/utils/media-utils"
 
 interface UserProfile {
   user_id: number
@@ -274,7 +275,7 @@ export default function EditProfilePage() {
             <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={profile.profile_picture_url || undefined} alt={profile.display_name} />
+                  <AvatarImage src={getMediaUrl(profile.profile_picture_url) || undefined} alt={profile.display_name} />
                   <AvatarFallback className="text-xl bg-slate-700 text-white">
                     {profile.display_name?.charAt(0)?.toUpperCase() ||
                       profile.username?.charAt(0)?.toUpperCase() ||

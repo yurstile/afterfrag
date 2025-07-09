@@ -206,7 +206,7 @@ export function CommentSection({ postId, communityName }: CommentSectionProps) {
           <div className="space-y-4">
             <div className="flex gap-3">
               <Avatar className="h-10 w-10 ring-2 ring-blue-500/30">
-                <AvatarImage src={user.profile_picture_url || undefined} alt={user.username} />
+                <AvatarImage src={getMediaUrl(user.profile_picture_url) || undefined} alt={user.username} />
                 <AvatarFallback className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white">
                   {user.username?.charAt(0)?.toUpperCase() || "?"}
                 </AvatarFallback>
@@ -297,7 +297,7 @@ export function CommentSection({ postId, communityName }: CommentSectionProps) {
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8 ring-1 ring-blue-500/30">
                       <AvatarImage
-                        src={comment.author_profile_picture_url || undefined}
+                        src={getMediaUrl(comment.author_profile_picture_url) || undefined}
                         alt={comment.author_display_name}
                       />
                       <AvatarFallback className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white text-sm">

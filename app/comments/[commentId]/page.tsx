@@ -10,6 +10,7 @@ import { ArrowLeft, MessageCircle, Heart, Share } from "lucide-react"
 import { formatDate } from "@/utils/date-utils"
 import { MediaGallery } from "@/components/media-gallery"
 import { CommentSection } from "@/components/comment-section"
+import { getMediaUrl } from "@/utils/media-utils"
 
 interface Comment {
   id: number
@@ -96,7 +97,7 @@ export default function CommentPage() {
       <CardContent className="pt-6">
         <div className="flex items-start gap-3 mb-4">
           <Avatar className="h-10 w-10 ring-2 ring-blue-500/30">
-            <AvatarImage src={comment.author_profile_picture_url || undefined} alt={comment.author_display_name} />
+            <AvatarImage src={getMediaUrl(comment.author_profile_picture_url) || undefined} alt={comment.author_display_name} />
             <AvatarFallback className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white">
               {comment.author_display_name.charAt(0).toUpperCase()}
             </AvatarFallback>

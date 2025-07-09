@@ -12,6 +12,7 @@ import { ArrowLeft, User, Edit, ExternalLink, Calendar, Globe } from "lucide-rea
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { formatDate } from "@/utils/date-utils"
 import { RecentActivityCard } from "@/components/recent-activity-card"
+import { getMediaUrl } from "@/utils/media-utils"
 
 interface UserProfile {
   user_id: number
@@ -174,7 +175,7 @@ export default function UserProfilePage() {
                 <div className="flex items-start gap-6">
                   <div className="relative">
                     <Avatar className="h-24 w-24 ring-2 ring-blue-500/50 shadow-lg shadow-blue-500/25">
-                      <AvatarImage src={profile.profile_picture_url || undefined} alt={profile.display_name} />
+                      <AvatarImage src={getMediaUrl(profile.profile_picture_url) || undefined} alt={profile.display_name} />
                       <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-600 to-cyan-600 text-white">
                         {profile.display_name.charAt(0).toUpperCase()}
                       </AvatarFallback>

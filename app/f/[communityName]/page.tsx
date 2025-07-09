@@ -26,6 +26,7 @@ import { PostCard } from "@/components/post-card"
 import { CreatePostDialog } from "@/components/create-post-dialog"
 import { PostTagManager } from "@/components/post-tag-manager"
 import { useToast } from "@/hooks/use-toast"
+import { getMediaUrl } from "@/utils/media-utils"
 
 interface CommunityMember {
   user_id: number
@@ -622,7 +623,7 @@ export default function CommunityDetailPage() {
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={member.profile_picture_url || undefined} alt={member.display_name} />
+                          <AvatarImage src={getMediaUrl(member.profile_picture_url) || undefined} alt={member.display_name} />
                           <AvatarFallback className="text-xs bg-slate-600">
                             {member.display_name.charAt(0).toUpperCase()}
                           </AvatarFallback>

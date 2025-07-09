@@ -17,6 +17,7 @@ import { MessageCircle, Share, Eye, MoreHorizontal, Edit, Trash2, Flag } from "l
 import { formatDate } from "@/utils/date-utils"
 import { MediaGallery } from "@/components/media-gallery"
 import { LikeButton } from "@/components/like-button"
+import { getMediaUrl } from "@/utils/media-utils"
 
 interface PostCardProps {
   id: number
@@ -85,7 +86,7 @@ export function PostCard({
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 ring-2 ring-blue-500/30">
-              <AvatarImage src={author_profile_picture_url || undefined} alt={author_display_name} />
+              <AvatarImage src={getMediaUrl(author_profile_picture_url) || undefined} alt={author_display_name} />
               <AvatarFallback className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white">
                 {author_display_name.charAt(0).toUpperCase()}
               </AvatarFallback>
