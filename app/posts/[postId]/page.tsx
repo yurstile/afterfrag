@@ -43,6 +43,7 @@ interface Post {
     thumbnail_url?: string
   }>
   user_id: number
+  community_id: number
 }
 
 export default function PostDetailPage() {
@@ -52,6 +53,7 @@ export default function PostDetailPage() {
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [communityName, setCommunityName] = useState<string | null>(null)
 
   const postId = params.postId as string
 
@@ -60,6 +62,25 @@ export default function PostDetailPage() {
       fetchPost()
     }
   }, [postId])
+
+  useEffect(() => {
+    if (post && !post.community_name && post.community_id) {
+      const fetchCommunityName = async () => {
+        try {
+          const token = localStorage.getItem("access_token")
+          if (!token) return
+          const response = await fetch(`https://app.afterfrag.com/communities/${post.community_id}`)
+          if (response.ok) {
+            const data = await response.json()
+            setCommunityName(data.name)
+          }
+        } catch {}
+      }
+      fetchCommunityName()
+    } else if (post && post.community_name) {
+      setCommunityName(post.community_name)
+    }
+  }, [post])
 
   const fetchPost = async () => {
     try {
@@ -105,7 +126,7 @@ export default function PostDetailPage() {
       })
 
       if (response.ok) {
-        router.push(`/f/${post?.community_name}`)
+        router.push(`/f/${communityName || ""}`)
       }
     } catch (err) {
       console.error("Failed to delete post:", err)
@@ -171,14 +192,14 @@ export default function PostDetailPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
-              <Link href={`/f/${post.community_name}`}>
+              <Link href={`/f/${communityName || ""}`}>
                 <Button
                   variant="ghost"
                   size="sm"
                   className="gap-2 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  Back to f/{post.community_name}
+                  Back to f/{communityName || ""}
                 </Button>
               </Link>
             </div>
@@ -219,10 +240,10 @@ export default function PostDetailPage() {
                     <span className="text-slate-400 text-sm">@{post.author_username}</span>
                     <span className="text-slate-500">in</span>
                     <Link
-                      href={`/f/${post.community_name}`}
+                      href={`/f/${communityName || ""}`}
                       className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
                     >
-                      f/{post.community_name}
+                      f/{communityName || ""}
                     </Link>
                   </div>
                   <p className="text-sm text-slate-400">{formatDate(post.created_at)}</p>
