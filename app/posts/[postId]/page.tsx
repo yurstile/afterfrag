@@ -276,4 +276,19 @@ export default function PostDetailPage() {
               </div>
             </div>
             {communityName && (
-              <Link href={`/f/${communityName}`
+              <Link href={`/f/${communityName}`}>
+                <span className="text-orange-600 font-semibold hover:underline">
+                  {communityName}
+                </span>
+              </Link>
+            )}
+          </div>
+        </div>
+      </header>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <PostCard post={post} onLike={handleLike} onUnlike={handleUnlike} onEdit={handleEdit} onDelete={handleDelete} />
+        <CommentSection post={post} onCommentCreated={handleCommentCreated} />
+      </main>
+    </div>
+  )
+}
