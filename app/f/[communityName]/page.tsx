@@ -314,7 +314,7 @@ export default function CommunityDetailPage() {
     }
   }
 
-  if (userLoading || loading) {
+  if (userLoading || loading || !community) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
@@ -336,6 +336,28 @@ export default function CommunityDetailPage() {
                 Go to Login
               </Button>
             </Link>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  if (error && !community) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm border-red-500/20">
+          <CardContent className="pt-6 text-center">
+            <Alert variant="destructive" className="bg-red-900/20 border-red-500/50 text-red-300">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+            <div className="mt-4">
+              <Link href="/communities/browse">
+                <Button variant="outline" className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white">
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Browse
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>
