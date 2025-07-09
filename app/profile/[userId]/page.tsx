@@ -48,7 +48,7 @@ export default function UserProfilePage() {
         return
       }
 
-      const response = await fetch(`https://app.afterfrag.com/users/${userId}/profile`, {
+      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

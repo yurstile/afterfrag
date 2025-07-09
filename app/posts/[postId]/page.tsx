@@ -312,7 +312,7 @@ export default function PostDetailPage() {
         </Card>
 
         {/* Comments Section */}
-        <CommentSection postId={post.id} />
+        <CommentSection postId={post.id} communityName={post.community_name} />
       </main>
     </div>
   )

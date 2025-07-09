@@ -41,9 +41,10 @@ interface Comment {
 
 interface CommentSectionProps {
   postId: number
+  communityName?: string
 }
 
-export function CommentSection({ postId }: CommentSectionProps) {
+export function CommentSection({ postId, communityName }: CommentSectionProps) {
   const { user } = useCurrentUser()
   const [comments, setComments] = useState<Comment[]>([])
   const [newComment, setNewComment] = useState("")
@@ -73,9 +74,10 @@ export function CommentSection({ postId }: CommentSectionProps) {
         const commentsWithFixedUrls = data.map((comment: Comment) => ({
           ...comment,
           media:
-            comment.media?.map((media) => ({
-              ...media,
-              media_url: getMediaUrl(media.media_url),
+            (comment.media || []).map((media, idx) => ({
+              id: idx,
+              media_type: media.file_type || media.media_type,
+              media_url: getMediaUrl(media.url || media.media_url),
               thumbnail_url: media.thumbnail_url ? getMediaUrl(media.thumbnail_url) : undefined,
             })) || [],
         }))
