@@ -574,7 +574,7 @@ export default function AdminPage() {
                         <h3 className="font-medium text-white">{community.name}</h3>
                         <p className="text-sm text-slate-400">{community.description}</p>
                         <div className="flex flex-wrap gap-2 mt-1">
-                          {community.tags.map((tag) => (
+                          {(community.tags || []).map((tag) => (
                             <Badge key={tag} className="bg-blue-900/30 text-blue-300 border-blue-500/30 text-xs">{tag}</Badge>
                           ))}
                         </div>
