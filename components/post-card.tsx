@@ -202,10 +202,7 @@ export function PostCard({
               </Button>
             </Link>
 
-            <div className="flex items-center gap-1 text-slate-400 text-sm">
-              <Eye className="h-4 w-4" />
-              <span>{view_count}</span>
-            </div>
+            {/* Remove any JSX or text that displays view_count */}
           </div>
 
           <Button variant="ghost" size="sm" className="gap-2 text-slate-400 hover:text-blue-300 hover:bg-blue-900/20">

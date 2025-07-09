@@ -69,7 +69,7 @@ export default function PostDetailPage() {
         return
       }
 
-      const response = await fetch(`https://api.loryx.lol/posts/${postId}`, {
+      const response = await fetch(`https://app.afterfrag.com/posts/${postId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -97,7 +97,7 @@ export default function PostDetailPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/posts/${postId}`, {
+      const response = await fetch(`https://app.afterfrag.com/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -155,6 +155,14 @@ export default function PostDetailPage() {
       </div>
     )
   }
+
+  // Map backend media to frontend format for MediaGallery
+  const mappedMedia = (post.media || []).map((item, idx) => ({
+    id: idx,
+    media_type: item.file_type || item.media_type,
+    media_url: item.url || item.media_url,
+    thumbnail_url: item.thumbnail_url,
+  }))
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
@@ -264,7 +272,7 @@ export default function PostDetailPage() {
               <div className="text-slate-300 whitespace-pre-wrap leading-relaxed">{post.content}</div>
             </div>
 
-            {post.media && post.media.length > 0 && <MediaGallery media={post.media} />}
+            {mappedMedia && mappedMedia.length > 0 && <MediaGallery media={mappedMedia} />}
 
             {post.post_tags && post.post_tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -288,12 +296,6 @@ export default function PostDetailPage() {
                   <MessageCircle className="h-5 w-5" />
                   <span className="font-medium">{post.comment_count}</span>
                   <span className="text-sm">Comments</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-slate-400">
-                  <Eye className="h-5 w-5" />
-                  <span className="font-medium">{post.view_count}</span>
-                  <span className="text-sm">Views</span>
                 </div>
               </div>
 

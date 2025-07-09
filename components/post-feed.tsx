@@ -128,9 +128,25 @@ export function PostFeed({ apiUrl, showCommunityName = false, emptyMessage = "No
 
   return (
     <div className="space-y-6">
-      {posts.map((post) => (
-        <PostCard key={post.id} {...post} showCommunityName={showCommunityName} onLike={handleLike} />
-      ))}
+      {posts.map((post) => {
+        // Map backend media to frontend format
+        const mappedMedia = (post.media || []).map((item, idx) => ({
+          id: idx,
+          media_type: item.file_type || item.media_type,
+          media_url: item.url || item.media_url,
+          thumbnail_url: item.thumbnail_url,
+        }))
+        return (
+          <PostCard
+            key={post.id}
+            {...post}
+            media={mappedMedia}
+            community_name={post.community_name}
+            showCommunityName={showCommunityName}
+            onLike={handleLike}
+          />
+        )
+      })}
 
       {hasMore && (
         <div className="text-center py-4">

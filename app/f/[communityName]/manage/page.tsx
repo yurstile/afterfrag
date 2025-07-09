@@ -128,7 +128,7 @@ export default function ManageCommunityPage() {
         return
       }
 
-      const response = await fetch(`https://api.loryx.lol/communities/f/${communityName}`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/f/${communityName}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -189,7 +189,7 @@ export default function ManageCommunityPage() {
         platform: link.platform.toLowerCase(),
       }))
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -247,7 +247,7 @@ export default function ManageCommunityPage() {
       const formData = new FormData()
       formData.append("file", file)
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}/banner`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}/banner`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -279,7 +279,7 @@ export default function ManageCommunityPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}/banner`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}/banner`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -326,7 +326,7 @@ export default function ManageCommunityPage() {
       const formData = new FormData()
       formData.append("file", file)
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}/group-picture`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}/group-picture`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -358,7 +358,7 @@ export default function ManageCommunityPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}/group-picture`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}/group-picture`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

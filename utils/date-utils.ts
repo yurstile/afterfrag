@@ -55,32 +55,84 @@ export function formatLastOnline(utcDateString: string | null): string {
 
 /**
  * Format a date string to local date
+ * Handles UTC timestamps from backend and converts to local time
  */
 export function formatDate(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  try {
+    // Parse the UTC timestamp - the backend sends ISO format strings
+    let utcDate: Date
 
-  if (diffInSeconds < 60) {
-    return "just now"
-  } else if (diffInSeconds < 3600) {
-    const minutes = Math.floor(diffInSeconds / 60)
-    return `${minutes}m ago`
-  } else if (diffInSeconds < 86400) {
-    const hours = Math.floor(diffInSeconds / 3600)
-    return `${hours}h ago`
-  } else if (diffInSeconds < 604800) {
-    const days = Math.floor(diffInSeconds / 86400)
-    return `${days}d ago`
-  } else {
-    return date.toLocaleDateString()
+    if (dateString.includes("T")) {
+      // ISO format with T separator (e.g., "2024-01-15T10:30:00.000000")
+      utcDate = new Date(dateString + (dateString.endsWith("Z") ? "" : "Z"))
+    } else {
+      // SQLite format without T separator (e.g., "2024-01-15 10:30:00.000000")
+      // Convert to ISO format and add Z to indicate UTC
+      const isoString = dateString.replace(" ", "T") + (dateString.endsWith("Z") ? "" : "Z")
+      utcDate = new Date(isoString)
+    }
+
+    // Check if the date is valid
+    if (isNaN(utcDate.getTime())) {
+      console.error("Invalid date format:", dateString)
+      return "Unknown"
+    }
+
+    const now = new Date()
+    const diffInSeconds = Math.floor((now.getTime() - utcDate.getTime()) / 1000)
+
+    if (diffInSeconds < 60) {
+      return "just now"
+    } else if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60)
+      return `${minutes}m ago`
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600)
+      return `${hours}h ago`
+    } else if (diffInSeconds < 604800) {
+      const days = Math.floor(diffInSeconds / 86400)
+      return `${days}d ago`
+    } else {
+      return utcDate.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    }
+  } catch (error) {
+    console.error("Error formatting date:", error, "Input:", dateString)
+    return "Unknown"
   }
 }
 
 /**
  * Format a date string to local date and time
+ * Handles UTC timestamps from backend and converts to local time
  */
 export function formatDateTime(dateString: string): string {
-  const date = new Date(dateString)
-  return date.toLocaleString()
+  try {
+    // Parse the UTC timestamp - the backend sends ISO format strings
+    let utcDate: Date
+
+    if (dateString.includes("T")) {
+      // ISO format with T separator (e.g., "2024-01-15T10:30:00.000000")
+      utcDate = new Date(dateString + (dateString.endsWith("Z") ? "" : "Z"))
+    } else {
+      // SQLite format without T separator (e.g., "2024-01-15 10:30:00.000000")
+      // Convert to ISO format and add Z to indicate UTC
+      const isoString = dateString.replace(" ", "T") + (dateString.endsWith("Z") ? "" : "Z")
+      utcDate = new Date(isoString)
+    }
+
+    // Check if the date is valid
+    if (isNaN(utcDate.getTime())) {
+      console.error("Invalid date format:", dateString)
+      return "Unknown"
+    }
+
+    return utcDate.toLocaleString()
+  } catch (error) {
+    console.error("Error formatting date:", error, "Input:", dateString)
+    return "Unknown"
+  }
 }
