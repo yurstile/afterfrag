@@ -49,7 +49,7 @@ export default function UserTopicsPage() {
         return
       }
 
-      const response = await fetch("https://api.loryx.lol/communities/user/topics", {
+      const response = await fetch("https://app.afterfrag.com/communities/user/topics", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
