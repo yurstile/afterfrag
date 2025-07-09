@@ -43,7 +43,7 @@ export function useRecommendations(userId?: number) {
           return
         }
 
-        const response = await fetch(`https://api.loryx.lol/users/${userId}/home/recommendations`, {
+        const response = await fetch(`https://app.afterfrag.com/users/${userId}/home/recommendations`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

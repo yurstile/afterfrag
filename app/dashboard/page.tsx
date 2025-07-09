@@ -67,7 +67,7 @@ export default function DashboardPage() {
       const token = localStorage.getItem("access_token")
       if (!token || !user) return
 
-      const response = await fetch(`https://api.loryx.lol/users/${user.user_id}/profile`, {
+      const response = await fetch(`https://app.afterfrag.com/users/${user.user_id}/profile`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -87,7 +87,7 @@ export default function DashboardPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch("https://api.loryx.lol/communities/user/joined", {
+      const response = await fetch("https://app.afterfrag.com/communities/user/joined", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -109,7 +109,7 @@ export default function DashboardPage() {
       const token = localStorage.getItem("access_token")
       if (!token || !user) return
 
-      const response = await fetch(`https://api.loryx.lol/users/${user.user_id}/home/recommendations`, {
+      const response = await fetch(`https://app.afterfrag.com/users/${user.user_id}/home/recommendations`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -136,7 +136,7 @@ export default function DashboardPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      await fetch(`https://api.loryx.lol/posts/${postId}/like`, {
+      await fetch(`https://app.afterfrag.com/posts/${postId}/like`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -158,7 +158,7 @@ export default function DashboardPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/posts/${postId}`, {
+      const response = await fetch(`https://app.afterfrag.com/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -180,10 +180,10 @@ export default function DashboardPage() {
 
   if (userLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-          <p>Loading...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-blue-200">Loading...</p>
         </div>
       </div>
     )
@@ -191,12 +191,12 @@ export default function DashboardPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <Card className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm border-blue-500/20">
           <CardContent className="pt-6 text-center">
-            <p className="mb-4">Please log in to continue</p>
+            <p className="mb-4 text-blue-200">Please log in to continue</p>
             <Link href="/login">
-              <Button>Go to Login</Button>
+              <Button className="bg-blue-600 hover:bg-blue-700">Go to Login</Button>
             </Link>
           </CardContent>
         </Card>
@@ -210,37 +210,54 @@ export default function DashboardPage() {
   const profilePictureUrl = userProfile?.profile_picture_url || user?.profile_picture_url
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
       {/* Top Navigation */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <header className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-b border-blue-500/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-12">
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-6 w-6 text-orange-600" />
-              <span className="text-lg font-bold text-orange-600">Afterfrag</span>
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-wygsedFsbzUPP0F7Z988Qqr7NPP93N.png"
+                alt="Afterfrag Logo"
+                className="h-6 w-6 filter brightness-0 invert opacity-80"
+              />
+              <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                Afterfrag
+              </span>
             </div>
 
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center gap-2 h-8 px-2">
-                  <Avatar className="h-6 w-6">
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 h-8 px-2 text-blue-200 hover:text-white hover:bg-blue-800/50"
+                >
+                  <Avatar className="h-6 w-6 ring-1 ring-blue-500/50">
                     <AvatarImage src={profilePictureUrl || undefined} alt={displayName} />
-                    <AvatarFallback className="text-xs">{displayName.charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="text-xs bg-blue-600">
+                      {displayName.charAt(0).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-medium">{username}</span>
                   <ChevronDown className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-48 bg-slate-800 border-blue-500/20">
                 <DropdownMenuItem asChild>
-                  <Link href={`/profile/${user.user_id}`} className="flex items-center gap-2">
+                  <Link
+                    href={`/profile/${user.user_id}`}
+                    className="flex items-center gap-2 text-blue-200 hover:text-white"
+                  >
                     <Settings className="h-4 w-4" />
                     Profile Settings
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 text-red-600">
+                <DropdownMenuSeparator className="bg-blue-500/20" />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-red-400 hover:text-red-300"
+                >
                   <LogOut className="h-4 w-4" />
                   Logout
                 </DropdownMenuItem>
@@ -252,17 +269,21 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-white border-r min-h-screen sticky top-12">
+        <aside className="w-64 bg-slate-800/50 backdrop-blur-sm border-r border-blue-500/20 min-h-screen sticky top-12">
           <div className="p-4 space-y-6">
             {/* Main Navigation */}
             <nav className="space-y-1">
-              <Button variant="default" className="w-full justify-start gap-2" asChild>
+              <Button variant="default" className="w-full justify-start gap-2 bg-blue-600 hover:bg-blue-700" asChild>
                 <Link href="/dashboard">
                   <Home className="h-4 w-4" />
                   Home
                 </Link>
               </Button>
-              <Button variant="ghost" className="w-full justify-start gap-2" asChild>
+              <Button
+                variant="ghost"
+                className="w-full justify-start gap-2 text-blue-200 hover:text-white hover:bg-blue-800/50"
+                asChild
+              >
                 <Link href="/communities/browse">
                   <Users className="h-4 w-4" />
                   Communities
@@ -275,14 +296,18 @@ export default function DashboardPage() {
               <CollapsibleTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="w-full justify-between p-2 h-8 text-xs font-medium text-gray-500 uppercase tracking-wide"
+                  className="w-full justify-between p-2 h-8 text-xs font-medium text-slate-400 uppercase tracking-wide hover:text-blue-300"
                 >
                   Communities
                   <ChevronDown className={`h-4 w-4 transition-transform ${communitiesOpen ? "" : "rotate-180"}`} />
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-1">
-                <Button variant="ghost" className="w-full justify-start gap-3 text-sm" asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 text-sm text-blue-200 hover:text-white hover:bg-blue-800/50"
+                  asChild
+                >
                   <Link href="/communities/create">
                     <Plus className="h-4 w-4" />
                     Create Fragsub
@@ -290,22 +315,24 @@ export default function DashboardPage() {
                 </Button>
                 {communitiesLoading ? (
                   <div className="text-center py-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600 mx-auto"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400 mx-auto"></div>
                   </div>
                 ) : userCommunities.length === 0 ? (
-                  <p className="text-xs text-gray-500 px-2 py-1">No communities joined</p>
+                  <p className="text-xs text-slate-500 px-2 py-1">No communities joined</p>
                 ) : (
                   userCommunities.map((community) => (
                     <Button
                       key={community.id}
                       variant="ghost"
-                      className="w-full justify-start gap-2 h-auto p-2"
+                      className="w-full justify-start gap-2 h-auto p-2 text-blue-200 hover:text-white hover:bg-blue-800/50"
                       asChild
                     >
                       <Link href={`/f/${community.name}`}>
                         <Avatar className="h-5 w-5">
                           <AvatarImage src={community.group_picture_url || undefined} alt={community.name} />
-                          <AvatarFallback className="text-xs">{community.name.charAt(0).toUpperCase()}</AvatarFallback>
+                          <AvatarFallback className="text-xs bg-blue-600">
+                            {community.name.charAt(0).toUpperCase()}
+                          </AvatarFallback>
                         </Avatar>
                         <span className="text-sm truncate">f/{community.name}</span>
                       </Link>
@@ -320,29 +347,45 @@ export default function DashboardPage() {
               <CollapsibleTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="w-full justify-between p-2 h-8 text-xs font-medium text-gray-500 uppercase tracking-wide"
+                  className="w-full justify-between p-2 h-8 text-xs font-medium text-slate-400 uppercase tracking-wide hover:text-blue-300"
                 >
                   Resources
                   <ChevronDown className={`h-4 w-4 transition-transform ${resourcesOpen ? "" : "rotate-180"}`} />
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-1">
-                <Button variant="ghost" className="w-full justify-start gap-3 text-sm" asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 text-sm text-blue-200 hover:text-white hover:bg-blue-800/50"
+                  asChild
+                >
                   <a href="https://discord.gg/afterfrag" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4" />
                     Discord
                   </a>
                 </Button>
-                <Button variant="ghost" className="w-full justify-start gap-3 text-sm" asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 text-sm text-blue-200 hover:text-white hover:bg-blue-800/50"
+                  asChild
+                >
                   <a href="https://twitter.com/afterfrag" target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="h-4 w-4" />
                     Twitter
                   </a>
                 </Button>
-                <Button variant="ghost" className="w-full justify-start gap-3 text-sm" asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 text-sm text-blue-200 hover:text-white hover:bg-blue-800/50"
+                  asChild
+                >
                   <Link href="/terms">Terms of Service</Link>
                 </Button>
-                <Button variant="ghost" className="w-full justify-start gap-3 text-sm" asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start gap-3 text-sm text-blue-200 hover:text-white hover:bg-blue-800/50"
+                  asChild
+                >
                   <Link href="/privacy">Privacy Policy</Link>
                 </Button>
               </CollapsibleContent>
@@ -354,19 +397,19 @@ export default function DashboardPage() {
         <main className="flex-1 p-6">
           <div className="max-w-2xl mx-auto">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold mb-2">Welcome back, {displayName}!</h1>
-              <p className="text-gray-600">Here's what's happening in your communities</p>
+              <h1 className="text-2xl font-bold mb-2 text-white">Welcome back, {displayName}!</h1>
+              <p className="text-blue-200">Here's what's happening in your communities</p>
             </div>
 
             {/* Feed Controls */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold">Your Feed</h2>
+              <h2 className="text-lg font-semibold text-white">Your Feed</h2>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={refreshFeed}
                 disabled={feedLoading}
-                className="gap-2 bg-transparent"
+                className="gap-2 border-blue-500/50 text-blue-300 hover:bg-blue-800/50 hover:border-blue-400 bg-transparent"
               >
                 <RefreshCw className={`h-4 w-4 ${feedLoading ? "animate-spin" : ""}`} />
                 Refresh Feed
@@ -376,17 +419,17 @@ export default function DashboardPage() {
             {/* Posts Feed */}
             {feedLoading ? (
               <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-                <p>Loading your personalized feed...</p>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
+                <p className="text-blue-200">Loading your personalized feed...</p>
               </div>
             ) : recommendedPosts.length === 0 ? (
-              <Card>
+              <Card className="bg-slate-800/50 backdrop-blur-sm border-blue-500/20">
                 <CardContent className="pt-6 text-center">
-                  <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <h3 className="text-lg font-medium mb-2">No posts in your feed</h3>
-                  <p className="text-gray-600 mb-4">Join some communities to see personalized content here!</p>
+                  <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50 text-blue-400" />
+                  <h3 className="text-lg font-medium mb-2 text-white">No posts in your feed</h3>
+                  <p className="text-blue-200 mb-4">Join some communities to see personalized content here!</p>
                   <Link href="/communities/browse">
-                    <Button>Browse Communities</Button>
+                    <Button className="bg-blue-600 hover:bg-blue-700">Browse Communities</Button>
                   </Link>
                 </CardContent>
               </Card>
@@ -411,7 +454,7 @@ export default function DashboardPage() {
                     variant="outline"
                     onClick={refreshFeed}
                     disabled={feedLoading}
-                    className="gap-2 bg-transparent"
+                    className="gap-2 border-blue-500/50 text-blue-300 hover:bg-blue-800/50 hover:border-blue-400 bg-transparent"
                   >
                     <RefreshCw className={`h-4 w-4 ${feedLoading ? "animate-spin" : ""}`} />
                     Load More Posts

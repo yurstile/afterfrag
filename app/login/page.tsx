@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Loader2, MessageSquare } from "lucide-react"
+import { Loader2 } from "lucide-react"
 
 declare global {
   interface Window {
@@ -45,7 +45,7 @@ export default function LoginPage() {
       if (turnstileRef.current) {
         widgetId.current = window.turnstile.render(turnstileRef.current, {
           sitekey: "0x4AAAAAABkEQeO4OZX7Txke",
-          theme: "light",
+          theme: "dark",
         })
       }
     }
@@ -64,7 +64,7 @@ export default function LoginPage() {
         return
       }
 
-      const response = await fetch("https://api.loryx.lol/auth/me", {
+      const response = await fetch("https://app.afterfrag.com/auth/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -99,7 +99,7 @@ export default function LoginPage() {
         return
       }
 
-      const response = await fetch("https://api.loryx.lol/auth/login", {
+      const response = await fetch("https://app.afterfrag.com/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -121,7 +121,7 @@ export default function LoginPage() {
       localStorage.setItem("access_token", data.access_token)
 
       // Check onboarding status
-      const onboardingResponse = await fetch("https://api.loryx.lol/onboarding/status", {
+      const onboardingResponse = await fetch("https://app.afterfrag.com/onboarding/status", {
         headers: {
           Authorization: `Bearer ${data.access_token}`,
         },
@@ -151,30 +151,38 @@ export default function LoginPage() {
 
   if (checkingSession) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-          <p>Checking session...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-blue-200">Checking session...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm border-blue-500/20 shadow-xl shadow-blue-500/10">
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <MessageSquare className="h-8 w-8 text-orange-600" />
-            <h1 className="text-2xl font-bold text-orange-600">Afterfrag</h1>
+            <img
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-wygsedFsbzUPP0F7Z988Qqr7NPP93N.png"
+              alt="Afterfrag Logo"
+              className="h-8 w-8 filter brightness-0 invert opacity-80"
+            />
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+              Afterfrag
+            </h1>
           </div>
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Sign in to your account to continue</CardDescription>
+          <CardTitle className="text-xl text-white">Welcome back</CardTitle>
+          <CardDescription className="text-blue-200">Sign in to your account to continue</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" className="text-blue-200">
+                Username
+              </Label>
               <Input
                 id="username"
                 type="text"
@@ -182,10 +190,13 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-slate-700/50 border-blue-500/30 text-white placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-blue-200">
+                Password
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -193,29 +204,30 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-slate-700/50 border-blue-500/30 text-white placeholder:text-slate-400 focus:border-blue-400 focus:ring-blue-400/20"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Security Check</Label>
+              <Label className="text-blue-200">Security Check</Label>
               <div ref={turnstileRef} className="flex justify-center">
                 {!turnstileLoaded && (
-                  <div className="h-16 w-full bg-gray-100 rounded flex items-center justify-center">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                  <div className="h-16 w-full bg-slate-700/50 rounded flex items-center justify-center border border-blue-500/20">
+                    <Loader2 className="h-4 w-4 animate-spin text-blue-400" />
                   </div>
                 )}
               </div>
             </div>
 
             {error && (
-              <Alert variant="destructive">
+              <Alert variant="destructive" className="bg-red-900/20 border-red-500/50 text-red-300">
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             <Button
               type="submit"
-              className="w-full bg-orange-600 hover:bg-orange-700"
+              className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200"
               disabled={isLoading || !turnstileLoaded}
             >
               {isLoading ? (
@@ -230,8 +242,8 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-6 text-center text-sm">
-            {"Don't have an account? "}
-            <Link href="/register" className="text-orange-600 hover:underline font-medium">
+            <span className="text-slate-400">{"Don't have an account? "}</span>
+            <Link href="/register" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
               Sign up
             </Link>
           </div>

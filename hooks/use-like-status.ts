@@ -1,62 +1,52 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useNotifications } from "@/components/notification-provider"
 
-interface UseLikeStatusProps {
-  itemId: number
-  itemType: "post" | "comment"
-  initialLikeCount: number
-}
-
-export function useLikeStatus({ itemId, itemType, initialLikeCount }: UseLikeStatusProps) {
-  const [likeCount, setLikeCount] = useState(initialLikeCount)
+export function useLikeStatus(postId: number) {
   const [userLike, setUserLike] = useState<1 | -1 | null>(null)
-  const [loading, setLoading] = useState(false)
-  const { success, error } = useNotifications()
+  const [loading, setLoading] = useState(true)
 
-  // Fetch user's current like status
   useEffect(() => {
-    fetchUserLikeStatus()
-  }, [itemId, itemType])
-
-  const fetchUserLikeStatus = async () => {
-    try {
-      const token = localStorage.getItem("access_token")
-      if (!token) return
-
-      // Note: This endpoint would need to be implemented in the backend
-      // For now, we'll skip this and rely on the initial state
-      // const response = await fetch(`https://api.loryx.lol/${itemType}s/${itemId}/like-status`, {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // })
-
-      // if (response.ok) {
-      //   const data = await response.json()
-      //   setUserLike(data.user_like)
-      // }
-    } catch (err) {
-      console.error("Failed to fetch like status:", err)
+    if (postId) {
+      fetchLikeStatus()
     }
-  }
+  }, [postId])
 
-  const handleLike = async (value: 1 | -1) => {
-    if (loading) return
-
-    setLoading(true)
-
+  const fetchLikeStatus = async () => {
     try {
       const token = localStorage.getItem("access_token")
       if (!token) {
-        error("Please log in to like posts")
+        setLoading(false)
         return
       }
 
-      // If user clicks the same button they already clicked, remove the like/dislike
+      const response = await fetch(`https://app.afterfrag.com/posts/${postId}/like-status`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setUserLike(data.value)
+      } else {
+        console.error("Failed to fetch like status:", response.status, response.statusText)
+      }
+    } catch (error) {
+      console.error("Failed to fetch like status:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const toggleLike = async (value: 1 | -1) => {
+    try {
+      const token = localStorage.getItem("access_token")
+      if (!token) return 0
+
       if (userLike === value) {
-        const response = await fetch(`https://api.loryx.lol/${itemType}s/${itemId}/like`, {
+        // Unlike
+        const response = await fetch(`https://app.afterfrag.com/posts/${postId}/like`, {
           method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -64,16 +54,15 @@ export function useLikeStatus({ itemId, itemType, initialLikeCount }: UseLikeSta
         })
 
         if (response.ok) {
-          setLikeCount((prev) => prev - value)
+          const oldValue = userLike
           setUserLike(null)
-          success(`${itemType === "post" ? "Post" : "Comment"} reaction removed`)
+          return -oldValue
         } else {
-          const errorData = await response.json()
-          error(errorData.detail || `Failed to remove ${itemType} reaction`)
+          console.error("Failed to unlike post:", response.status, response.statusText)
         }
       } else {
-        // Add or change like/dislike
-        const response = await fetch(`https://api.loryx.lol/${itemType}s/${itemId}/like`, {
+        // Like or change like
+        const response = await fetch(`https://app.afterfrag.com/posts/${postId}/like`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -83,35 +72,18 @@ export function useLikeStatus({ itemId, itemType, initialLikeCount }: UseLikeSta
         })
 
         if (response.ok) {
-          let countChange = value
-
-          // If user had a previous like/dislike, account for removing it
-          if (userLike !== null) {
-            countChange = value - userLike
-          }
-
-          setLikeCount((prev) => prev + countChange)
+          const oldValue = userLike
           setUserLike(value)
-          
-          const action = value === 1 ? "liked" : "disliked"
-          success(`${itemType === "post" ? "Post" : "Comment"} ${action}!`)
+          return oldValue ? value - oldValue : value
         } else {
-          const errorData = await response.json()
-          error(errorData.detail || `Failed to ${value === 1 ? "like" : "dislike"} ${itemType}`)
+          console.error("Failed to like post:", response.status, response.statusText)
         }
       }
-    } catch (err) {
-      error(`Failed to ${userLike === value ? "remove reaction from" : value === 1 ? "like" : "dislike"} ${itemType}`)
-      console.error(`Failed to ${userLike === value ? "unlike" : "like"} ${itemType}:`, err)
-    } finally {
-      setLoading(false)
+    } catch (error) {
+      console.error("Failed to toggle like:", error)
     }
+    return 0
   }
 
-  return {
-    likeCount,
-    userLike,
-    loading,
-    handleLike,
-  }
+  return { userLike, loading, toggleLike }
 }

@@ -316,10 +316,10 @@ export default function CommunityDetailPage() {
 
   if (userLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-          <p>Loading Fragsub...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-blue-200">Loading Fragsub...</p>
         </div>
       </div>
     )
@@ -327,12 +327,14 @@ export default function CommunityDetailPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+        <Card className="w-full max-w-md bg-slate-800/50 backdrop-blur-sm border-blue-500/20">
           <CardContent className="pt-6 text-center">
-            <p className="mb-4">Please log in to continue</p>
+            <p className="mb-4 text-blue-200">Please log in to continue</p>
             <Link href="/login">
-              <Button>Go to Login</Button>
+              <Button className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
+                Go to Login
+              </Button>
             </Link>
           </CardContent>
         </Card>
@@ -340,49 +342,41 @@ export default function CommunityDetailPage() {
     )
   }
 
-  if (error || !community) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <Alert variant="destructive">
-              <AlertDescription>{error || "Fragsub not found"}</AlertDescription>
-            </Alert>
-            <div className="mt-4 text-center">
-              <Link href="/communities/browse">
-                <Button variant="outline" className="gap-2 bg-transparent">
-                  <ArrowLeft className="h-4 w-4" />
-                  Back to Browse
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <header className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-b border-blue-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
               <Link href="/communities/browse">
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+                >
                   <ArrowLeft className="h-4 w-4" />
                   Back
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-orange-600" />
-                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
+                <img
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-wygsedFsbzUPP0F7Z988Qqr7NPP93N.png"
+                  alt="Logo"
+                  className="h-6 w-6"
+                />
+                <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                  Afterfrag
+                </span>
               </div>
             </div>
             <div className="flex items-center gap-2">
               {userRole === "owner" && (
                 <Link href={`/f/${community.name}/manage`}>
-                  <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2 bg-transparent border-blue-500/50 text-blue-300 hover:bg-blue-800/50"
+                  >
                     <Settings className="h-4 w-4" />
                     Manage
                   </Button>
@@ -403,7 +397,7 @@ export default function CommunityDetailPage() {
                 <Button
                   onClick={joinCommunity}
                   disabled={membershipLoading}
-                  className="gap-2 bg-orange-600 hover:bg-orange-700"
+                  className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
                 >
                   <UserPlus className="h-4 w-4" />
                   {membershipLoading ? "Joining..." : "Join"}
@@ -418,7 +412,7 @@ export default function CommunityDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2">
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-sm border-blue-500/20 shadow-xl shadow-blue-500/10">
               {/* Community Banner */}
               {community.banner_picture_url && (
                 <div className="w-full h-48 overflow-hidden rounded-t-lg">
@@ -437,29 +431,31 @@ export default function CommunityDetailPage() {
                     {community.group_picture_url && (
                       <Avatar className="h-16 w-16">
                         <AvatarImage src={community.group_picture_url || "/placeholder.svg"} alt={community.name} />
-                        <AvatarFallback className="text-xl">{community.name.charAt(0).toUpperCase()}</AvatarFallback>
+                        <AvatarFallback className="text-xl bg-gradient-to-br from-blue-600 to-cyan-600 text-white">
+                          {community.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
                       </Avatar>
                     )}
                     <div>
-                      <CardTitle className="text-3xl mb-2">f/{community.name}</CardTitle>
-                      <CardDescription className="text-base">
+                      <CardTitle className="text-3xl mb-2 text-white">f/{community.name}</CardTitle>
+                      <CardDescription className="text-base text-blue-300">
                         Created by @{community.owner_username} • {formatDate(community.created_at)}
                       </CardDescription>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-lg font-semibold">
+                  <div className="flex items-center gap-2 text-lg font-semibold text-white">
                     <Users className="h-5 w-5" />
                     {community.member_count}
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-gray-700 mb-6 whitespace-pre-wrap">{community.description}</div>
+                <div className="text-slate-300 mb-6 whitespace-pre-wrap">{community.description}</div>
 
                 {community.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-6">
                     {community.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary">
+                      <Badge key={tag} variant="secondary" className="bg-blue-800/30 text-blue-300">
                         {tag}
                       </Badge>
                     ))}
@@ -469,7 +465,7 @@ export default function CommunityDetailPage() {
                 {/* Social Links */}
                 {community.social_links && community.social_links.length > 0 && (
                   <div className="mb-6">
-                    <h4 className="font-semibold mb-3">Community Links</h4>
+                    <h4 className="font-semibold mb-3 text-white">Community Links</h4>
                     <div className="flex flex-wrap gap-2">
                       {community.social_links.map((link, index) => (
                         <a
@@ -477,7 +473,7 @@ export default function CommunityDetailPage() {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
+                          className="inline-flex items-center gap-2 px-3 py-2 bg-blue-800/30 hover:bg-blue-700/40 border border-blue-500/30 rounded-lg text-sm transition-colors text-blue-300 hover:text-blue-100 hover:shadow-lg hover:shadow-blue-500/20"
                         >
                           <Globe className="h-4 w-4" />
                           <span>{link.platform}</span>
@@ -489,7 +485,7 @@ export default function CommunityDetailPage() {
                 )}
 
                 {error && (
-                  <Alert variant="destructive" className="mb-6">
+                  <Alert variant="destructive" className="mb-6 bg-red-900/20 border-red-500/50 text-red-300">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
@@ -497,12 +493,12 @@ export default function CommunityDetailPage() {
                 {/* Posts section */}
                 <div className="border-t pt-6">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold">Posts</h3>
+                    <h3 className="text-lg font-semibold text-white">Posts</h3>
                     <div className="flex items-center gap-2">
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as any)}
-                        className="px-3 py-1 border rounded-md text-sm"
+                        className="px-3 py-1 border rounded-md text-sm bg-slate-700/50 text-white border-blue-500/30"
                       >
                         <option value="newest">Newest</option>
                         <option value="most_liked">Most Liked</option>
@@ -524,11 +520,11 @@ export default function CommunityDetailPage() {
 
                   {postsLoading ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-                      <p>Loading posts...</p>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-4"></div>
+                      <p className="text-blue-200">Loading posts...</p>
                     </div>
                   ) : posts.length === 0 ? (
-                    <div className="text-center py-12 text-gray-500">
+                    <div className="text-center py-12 text-slate-400">
                       <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p className="text-sm">No posts yet in this Fragsub</p>
                       <p className="text-xs">Be the first to share something!</p>
@@ -587,9 +583,9 @@ export default function CommunityDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Staff Members */}
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-sm border-blue-500/20 shadow-xl shadow-blue-500/10">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-white">
                   <Users className="h-5 w-5" />
                   Staff ({community.staff_members.length})
                 </CardTitle>
@@ -600,18 +596,18 @@ export default function CommunityDetailPage() {
                     <Link
                       key={member.user_id}
                       href={`/profile/${member.user_id}`}
-                      className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                      className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-700/30 transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={member.profile_picture_url || undefined} alt={member.display_name} />
-                          <AvatarFallback className="text-xs">
+                          <AvatarFallback className="text-xs bg-slate-600">
                             {member.display_name.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium">{member.display_name}</p>
-                          <p className="text-xs text-gray-500">@{member.username}</p>
+                          <p className="text-sm font-medium text-white">{member.display_name}</p>
+                          <p className="text-xs text-slate-400">@{member.username}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
@@ -626,16 +622,16 @@ export default function CommunityDetailPage() {
 
             {/* Community Rules */}
             {community.rules && community.rules.length > 0 && (
-              <Card>
+              <Card className="bg-slate-800/50 backdrop-blur-sm border-blue-500/20 shadow-xl shadow-blue-500/10">
                 <CardHeader>
-                  <CardTitle>Community Rules</CardTitle>
+                  <CardTitle className="text-white">Community Rules</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     {community.rules.map((rule, index) => (
                       <div key={index} className="flex items-start gap-3">
-                        <span className="text-sm font-medium text-gray-500 mt-0.5">{index + 1}.</span>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{rule}</p>
+                        <span className="text-sm font-medium text-slate-400 mt-0.5">{index + 1}.</span>
+                        <p className="text-sm text-slate-300 whitespace-pre-wrap">{rule}</p>
                       </div>
                     ))}
                   </div>
@@ -644,29 +640,29 @@ export default function CommunityDetailPage() {
             )}
 
             {/* Community Info */}
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-sm border-blue-500/20 shadow-xl shadow-blue-500/10">
               <CardHeader>
-                <CardTitle>About</CardTitle>
+                <CardTitle className="text-white">About</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Created</span>
-                  <span>{formatDate(community.created_at)}</span>
+                  <span className="text-slate-400">Created</span>
+                  <span className="text-slate-200">{formatDate(community.created_at)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Total Fraggers</span>
-                  <span>{community.member_count}</span>
+                  <span className="text-slate-400">Total Fraggers</span>
+                  <span className="text-slate-200">{community.member_count}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Online Now</span>
+                  <span className="text-slate-400">Online Now</span>
                   <span className="flex items-center gap-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     {community.online_member_count} online
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Owner</span>
-                  <Link href={`/profile/${community.owner_id}`} className="text-orange-600 hover:underline">
+                  <span className="text-slate-400">Owner</span>
+                  <Link href={`/profile/${community.owner_id}`} className="text-blue-400 hover:text-blue-300">
                     @{community.owner_username}
                   </Link>
                 </div>

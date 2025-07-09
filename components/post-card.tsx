@@ -1,307 +1,214 @@
 "use client"
 
-import type React from "react"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { MessageCircle, Eye, MoreHorizontal, Edit, Trash2, Share, ChevronUp, ChevronDown } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { MessageCircle, Share, Eye, MoreHorizontal, Edit, Trash2, Flag } from "lucide-react"
+import { formatDate } from "@/utils/date-utils"
 import { MediaGallery } from "@/components/media-gallery"
-import { formatLastOnline } from "@/utils/date-utils"
-import { useCurrentUser } from "@/hooks/use-current-user"
 import { LikeButton } from "@/components/like-button"
-
-interface PostMedia {
-  file_uuid: string
-  file_type: "image" | "video"
-  file_size: number
-  url: string
-}
-
-interface PostTag {
-  id: number
-  community_id: number
-  name: string
-  color: string
-}
 
 interface PostCardProps {
   id: number
-  community_id: number
-  user_id: number
   title: string
   content: string
-  post_tags: PostTag[]
-  like_count: number
-  view_count: number
-  created_at: string
-  updated_at: string
-  media: PostMedia[]
   author_username: string
   author_display_name: string
   author_profile_picture_url: string | null
-  comment_count?: number
   community_name?: string
-  onLike?: (value: 1 | -1) => void
-  onEdit?: () => void
-  onDelete?: () => void
-  isDetailView?: boolean
+  like_count: number
+  comment_count: number
+  view_count: number
+  created_at: string
+  updated_at: string
+  post_tags: string[]
+  media: Array<{
+    id: number
+    media_type: string
+    media_url: string
+    thumbnail_url?: string
+  }>
+  user_id: number
   showCommunityName?: boolean
+  onLike?: (value: 1 | -1) => void
+  onDelete?: () => void
+  onEdit?: () => void
 }
 
-export const PostCard: React.FC<PostCardProps> = ({
+export function PostCard({
   id,
-  community_id,
-  user_id,
   title,
   content,
-  post_tags,
-  like_count,
-  view_count,
-  created_at,
-  updated_at,
-  media,
   author_username,
   author_display_name,
   author_profile_picture_url,
-  comment_count = 0,
   community_name,
-  onLike,
-  onEdit,
-  onDelete,
-  isDetailView = false,
+  like_count,
+  comment_count,
+  view_count,
+  created_at,
+  updated_at,
+  post_tags,
+  media,
+  user_id,
   showCommunityName = false,
-}) => {
-  const router = useRouter()
-  const { user } = useCurrentUser()
-  const [isExpanded, setIsExpanded] = useState(isDetailView)
+  onLike,
+  onDelete,
+  onEdit,
+}: PostCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const shouldTruncate = content.length > 300
 
-  const isOwnPost = user?.user_id === user_id
-  const shouldTruncate = content.length > 300 && !isDetailView
   const displayContent = shouldTruncate && !isExpanded ? content.slice(0, 300) + "..." : content
 
-  const handleViewPost = async () => {
-    try {
-      const token = localStorage.getItem("access_token")
-      if (!token) return
-
-      await fetch(`https://api.loryx.lol/posts/${id}/view`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-    } catch (err) {
-      console.error("Failed to record view:", err)
-    }
-  }
-
-  const handleCardClick = () => {
-    if (!isDetailView) {
-      handleViewPost()
-      router.push(`/posts/${id}`)
-    }
-  }
-
-  const handleShare = async (e: React.MouseEvent) => {
-    e.stopPropagation()
-    const url = `${window.location.origin}/posts/${id}`
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: title,
-          text: content.slice(0, 100) + "...",
-          url: url,
-        })
-      } catch (err) {
-        // User cancelled sharing
-      }
-    } else {
-      // Fallback to clipboard
-      try {
-        await navigator.clipboard.writeText(url)
-        // You could show a toast notification here
-      } catch (err) {
-        console.error("Failed to copy to clipboard:", err)
-      }
-    }
-  }
-
-  const handleProfileClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
-
-  const handleCommunityClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
-
-  const handleExpandClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setIsExpanded(!isExpanded)
-  }
-
-  const handleCommentClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (!isDetailView) {
-      handleViewPost()
-      router.push(`/posts/${id}`)
-    }
-  }
+  // Map backend media to frontend format
+  const mappedMedia = (media || []).map((item, idx) => ({
+    id: idx,
+    media_type: item.file_type || item.media_type,
+    media_url: item.url || item.media_url,
+    thumbnail_url: item.thumbnail_url,
+  }))
 
   return (
-    <Card
-      className={`hover:shadow-md transition-shadow ${!isDetailView ? "cursor-pointer" : ""}`}
-      onClick={handleCardClick}
-    >
-      <CardContent className="p-4">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex items-center gap-3 flex-1">
-            <Link href={`/profile/${user_id}`} onClick={handleProfileClick}>
-              <Avatar className="h-10 w-10 cursor-pointer">
-                <AvatarImage src={author_profile_picture_url || undefined} alt={author_display_name} />
-                <AvatarFallback>{author_display_name.charAt(0).toUpperCase()}</AvatarFallback>
-              </Avatar>
-            </Link>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 flex-wrap">
-                <Link href={`/profile/${user_id}`} className="font-medium hover:underline" onClick={handleProfileClick}>
+    <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700 shadow-xl shadow-blue-500/10 hover:shadow-blue-500/20 transition-all duration-300">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 ring-2 ring-blue-500/30">
+              <AvatarImage src={author_profile_picture_url || undefined} alt={author_display_name} />
+              <AvatarFallback className="bg-gradient-to-br from-blue-600 to-cyan-600 text-white">
+                {author_display_name.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="flex items-center gap-2">
+                <Link
+                  href={`/profile/${user_id}`}
+                  className="font-medium text-white hover:text-blue-300 transition-colors"
+                >
                   {author_display_name}
                 </Link>
-                <span className="text-sm text-gray-500">@{author_username}</span>
-                {(showCommunityName || isDetailView) && community_name && (
+                <span className="text-slate-400 text-sm">@{author_username}</span>
+                {showCommunityName && community_name && (
                   <>
-                    <span className="text-sm text-gray-500">in</span>
+                    <span className="text-slate-500">in</span>
                     <Link
                       href={`/f/${community_name}`}
-                      className="text-sm text-orange-600 hover:underline"
-                      onClick={handleCommunityClick}
+                      className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors"
                     >
                       f/{community_name}
                     </Link>
                   </>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-xs text-gray-500">
-                <span>{formatLastOnline(created_at)}</span>
-                {updated_at !== created_at && <span>(edited)</span>}
-              </div>
+              <p className="text-sm text-slate-400">{formatDate(created_at)}</p>
             </div>
           </div>
 
-          {/* Actions Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={(e) => e.stopPropagation()}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-slate-700"
+              >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleShare}>
-                <Share className="h-4 w-4 mr-2" />
-                Share
-              </DropdownMenuItem>
-              {isOwnPost && onEdit && (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onEdit()
-                  }}
-                >
+            <DropdownMenuContent align="end" className="bg-slate-800 border-slate-700">
+              {onEdit && (
+                <DropdownMenuItem onClick={onEdit} className="text-slate-300 hover:text-white hover:bg-slate-700">
                   <Edit className="h-4 w-4 mr-2" />
-                  Edit
+                  Edit Post
                 </DropdownMenuItem>
               )}
-              {isOwnPost && onDelete && (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete()
-                  }}
-                  className="text-red-600"
-                >
+              {onDelete && (
+                <DropdownMenuItem onClick={onDelete} className="text-red-400 hover:text-red-300 hover:bg-red-900/20">
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
+                  Delete Post
                 </DropdownMenuItem>
               )}
+              <DropdownMenuSeparator className="bg-slate-700" />
+              <DropdownMenuItem className="text-slate-300 hover:text-white hover:bg-slate-700">
+                <Flag className="h-4 w-4 mr-2" />
+                Report Post
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </CardHeader>
 
-        {/* Post Tags */}
-        {post_tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {post_tags.map((tag) => (
-              <Badge
-                key={tag.id}
-                variant="secondary"
-                style={{ backgroundColor: tag.color + "20", color: tag.color, borderColor: tag.color }}
-                className="text-xs"
+      <CardContent className="space-y-4">
+        <div>
+          <Link href={`/posts/${id}`}>
+            <h3 className="text-lg font-semibold mb-2 text-white hover:text-blue-300 transition-colors cursor-pointer">
+              {title}
+            </h3>
+          </Link>
+
+          <div className="text-slate-300 whitespace-pre-wrap leading-relaxed">
+            {displayContent}
+            {shouldTruncate && (
+              <Button
+                variant="link"
+                size="sm"
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="p-0 h-auto text-blue-400 hover:text-blue-300 ml-2"
               >
-                {tag.name}
+                {isExpanded ? "Show less" : "Read more"}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {mappedMedia && mappedMedia.length > 0 && <MediaGallery media={mappedMedia} />}
+
+        {post_tags && post_tags.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {post_tags.map((tag, index) => (
+              <Badge
+                key={index}
+                variant="secondary"
+                className="bg-blue-900/30 text-blue-300 border-blue-500/30 hover:bg-blue-800/40 transition-colors"
+              >
+                {tag}
               </Badge>
             ))}
           </div>
         )}
 
-        {/* Title */}
-        <h3 className="text-lg font-semibold mb-2">{title}</h3>
-
-        {/* Content */}
-        <div className="text-gray-700 mb-3 whitespace-pre-wrap">
-          {displayContent}
-          {shouldTruncate && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="p-0 h-auto text-orange-600 hover:text-orange-700 ml-2"
-              onClick={handleExpandClick}
-            >
-              {isExpanded ? (
-                <>
-                  Show less <ChevronUp className="h-4 w-4 ml-1" />
-                </>
-              ) : (
-                <>
-                  Show more <ChevronDown className="h-4 w-4 ml-1" />
-                </>
-              )}
-            </Button>
-          )}
-        </div>
-
-        {/* Media */}
-        {media.length > 0 && (
-          <div className="mb-4" onClick={(e) => e.stopPropagation()}>
-            <MediaGallery media={media} />
-          </div>
-        )}
-
-        {/* Interaction Bar */}
-        <div className="flex items-center justify-between pt-3 border-t">
+        <div className="flex items-center justify-between pt-2 border-t border-slate-700">
           <div className="flex items-center gap-4">
-            {/* Like/Dislike */}
-            <LikeButton itemId={id} itemType="post" initialLikeCount={like_count} />
+            <LikeButton postId={id} initialLikeCount={like_count} onLike={onLike} />
 
-            {/* Comments */}
-            <Button variant="ghost" size="sm" className="gap-1 h-8 px-2" onClick={handleCommentClick}>
-              <MessageCircle className="h-4 w-4" />
-              {comment_count}
-            </Button>
+            <Link href={`/posts/${id}`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="gap-2 text-slate-400 hover:text-blue-300 hover:bg-blue-900/20"
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span>{comment_count}</span>
+              </Button>
+            </Link>
 
-            {/* Views */}
-            <div className="flex items-center gap-1 text-sm text-gray-500">
+            <div className="flex items-center gap-1 text-slate-400 text-sm">
               <Eye className="h-4 w-4" />
-              {view_count}
+              <span>{view_count}</span>
             </div>
           </div>
 
-          {/* Share Button */}
-          <Button variant="ghost" size="sm" className="gap-1 h-8 px-2" onClick={handleShare}>
+          <Button variant="ghost" size="sm" className="gap-2 text-slate-400 hover:text-blue-300 hover:bg-blue-900/20">
             <Share className="h-4 w-4" />
             Share
           </Button>

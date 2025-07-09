@@ -26,24 +26,27 @@ export function formatLastOnline(utcDateString: string | null): string {
     }
 
     const now = new Date()
-    const diffMs = now.getTime() - utcDate.getTime()
-    const diffMins = Math.floor(diffMs / (1000 * 60))
-    const diffHours = Math.floor(diffMins / 60)
-    const diffDays = Math.floor(diffHours / 24)
+    const diffInSeconds = Math.floor((now.getTime() - utcDate.getTime()) / 1000)
 
-    if (diffMins < 1) return "Just now"
-    if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`
-    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`
-    if (diffDays < 7) return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`
-
-    // For longer periods, show the actual date in local time
-    return utcDate.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
+    if (diffInSeconds < 60) return "just now"
+    if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60)
+      return `${minutes}m ago`
+    } else if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600)
+      return `${hours}h ago`
+    } else if (diffInSeconds < 604800) {
+      const days = Math.floor(diffInSeconds / 86400)
+      return `${days}d ago`
+    } else {
+      return utcDate.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      })
+    }
   } catch (error) {
     console.error("Error formatting date:", error, "Input:", utcDateString)
     return "Unknown"
@@ -54,30 +57,30 @@ export function formatLastOnline(utcDateString: string | null): string {
  * Format a date string to local date
  */
 export function formatDate(dateString: string): string {
-  try {
-    let date: Date
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
-    if (dateString.includes("T")) {
-      // ISO format with T separator
-      date = new Date(dateString + (dateString.endsWith("Z") ? "" : "Z"))
-    } else {
-      // SQLite format without T separator
-      const isoString = dateString.replace(" ", "T") + (dateString.endsWith("Z") ? "" : "Z")
-      date = new Date(isoString)
-    }
-
-    if (isNaN(date.getTime())) {
-      console.error("Invalid date format:", dateString)
-      return "Unknown date"
-    }
-
-    return date.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-  } catch (error) {
-    console.error("Error formatting date:", error, "Input:", dateString)
-    return "Unknown date"
+  if (diffInSeconds < 60) {
+    return "just now"
+  } else if (diffInSeconds < 3600) {
+    const minutes = Math.floor(diffInSeconds / 60)
+    return `${minutes}m ago`
+  } else if (diffInSeconds < 86400) {
+    const hours = Math.floor(diffInSeconds / 3600)
+    return `${hours}h ago`
+  } else if (diffInSeconds < 604800) {
+    const days = Math.floor(diffInSeconds / 86400)
+    return `${days}d ago`
+  } else {
+    return date.toLocaleDateString()
   }
+}
+
+/**
+ * Format a date string to local date and time
+ */
+export function formatDateTime(dateString: string): string {
+  const date = new Date(dateString)
+  return date.toLocaleString()
 }

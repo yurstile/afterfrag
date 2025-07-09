@@ -32,7 +32,7 @@ export function useRecentActivity(page = 1, pageSize = 10) {
       if (!token) throw new Error("No authentication token")
 
       const response = await fetch(
-        `https://api.loryx.lol/users/${user.user_id}/profile/recent-activity?page=${page}&page_size=${pageSize}`,
+        `https://app.afterfrag.com/users/${user.user_id}/profile/recent-activity?page=${page}&page_size=${pageSize}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

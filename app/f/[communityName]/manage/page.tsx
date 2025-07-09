@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MessageSquare, ArrowLeft, Settings, Save, Plus, X, Loader2, Upload, Trash2, ImageIcon } from "lucide-react"
+import { ArrowLeft, Settings, Save, Plus, X, Loader2, Upload, Trash2, ImageIcon } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 
 interface SocialLink {
@@ -408,10 +408,10 @@ export default function ManageCommunityPage() {
 
   if (userLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-          <p>Loading...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-white">Loading...</p>
         </div>
       </div>
     )
@@ -419,15 +419,18 @@ export default function ManageCommunityPage() {
 
   if (error && !community) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-slate-800 border-slate-700">
           <CardContent className="pt-6">
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+            <Alert variant="destructive" className="bg-red-900/20 border-red-500/50">
+              <AlertDescription className="text-red-300">{error}</AlertDescription>
             </Alert>
             <div className="mt-4 text-center">
               <Link href={`/f/${communityName}`}>
-                <Button variant="outline" className="gap-2 bg-transparent">
+                <Button
+                  variant="outline"
+                  className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                >
                   <ArrowLeft className="h-4 w-4" />
                   Back to Community
                 </Button>
@@ -440,23 +443,23 @@ export default function ManageCommunityPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-slate-900">
+      <header className="bg-slate-800 border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
               <Link href={`/f/${communityName}`}>
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className="gap-2 text-slate-300 hover:text-white hover:bg-slate-700">
                   <ArrowLeft className="h-4 w-4" />
                   Back to Community
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-orange-600" />
-                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
+                <img src="/logo.png" alt="Afterfrag" className="h-8 w-8" />
+                <span className="text-lg font-bold text-white">Afterfrag</span>
               </div>
             </div>
-            <Button onClick={handleSave} disabled={saving} className="gap-2">
+            <Button onClick={handleSave} disabled={saving} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
               {saving ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -475,15 +478,15 @@ export default function ManageCommunityPage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Manage f/{communityName}</h1>
-          <p className="text-gray-600">Update your community settings and information</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Manage f/{communityName}</h1>
+          <p className="text-slate-400">Update your community settings and information</p>
         </div>
 
         <div className="space-y-6">
           {/* Community Images */}
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-white">
                 <ImageIcon className="h-5 w-5" />
                 Community Images
               </CardTitle>
@@ -491,9 +494,9 @@ export default function ManageCommunityPage() {
             <CardContent className="space-y-6">
               {/* Banner Image */}
               <div className="space-y-4">
-                <Label>Banner Image</Label>
+                <Label className="text-slate-300">Banner Image</Label>
                 {community?.banner_picture_url && (
-                  <div className="w-full h-48 overflow-hidden rounded-lg border">
+                  <div className="w-full h-48 overflow-hidden rounded-lg border border-slate-700">
                     <img
                       src={community.banner_picture_url || "/placeholder.svg"}
                       alt="Community banner"
@@ -505,7 +508,7 @@ export default function ManageCommunityPage() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="gap-2 bg-transparent"
+                    className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
                     disabled={uploadingBanner}
                     onClick={() => bannerInputRef.current?.click()}
                   >
@@ -516,7 +519,7 @@ export default function ManageCommunityPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="gap-2 bg-transparent"
+                      className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
                       disabled={uploadingBanner}
                       onClick={handleBannerDelete}
                     >
@@ -525,7 +528,7 @@ export default function ManageCommunityPage() {
                     </Button>
                   )}
                 </div>
-                <p className="text-xs text-gray-500">Recommended: 1200x400px, JPG or PNG, max 5MB</p>
+                <p className="text-xs text-slate-400">Recommended: 1200x400px, JPG or PNG, max 5MB</p>
                 <input
                   ref={bannerInputRef}
                   type="file"
@@ -537,18 +540,20 @@ export default function ManageCommunityPage() {
 
               {/* Group Picture */}
               <div className="space-y-4">
-                <Label>Group Picture</Label>
+                <Label className="text-slate-300">Group Picture</Label>
                 <div className="flex items-center gap-4">
                   <Avatar className="h-20 w-20">
                     <AvatarImage src={community?.group_picture_url || undefined} alt={community?.name} />
-                    <AvatarFallback className="text-xl">{community?.name.charAt(0).toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className="text-xl bg-slate-700 text-white">
+                      {community?.name?.charAt(0)?.toUpperCase() || "?"}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="space-y-2">
                     <div className="flex gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="gap-2 bg-transparent"
+                        className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
                         disabled={uploadingPicture}
                         onClick={() => pictureInputRef.current?.click()}
                       >
@@ -563,7 +568,7 @@ export default function ManageCommunityPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          className="gap-2 bg-transparent"
+                          className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
                           disabled={uploadingPicture}
                           onClick={handlePictureDelete}
                         >
@@ -572,7 +577,7 @@ export default function ManageCommunityPage() {
                         </Button>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500">Square image recommended, JPG or PNG, max 5MB</p>
+                    <p className="text-xs text-slate-400">Square image recommended, JPG or PNG, max 5MB</p>
                   </div>
                   <input
                     ref={pictureInputRef}
@@ -587,30 +592,34 @@ export default function ManageCommunityPage() {
           </Card>
 
           {/* Basic Information */}
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-white">
                 <Settings className="h-5 w-5" />
                 Basic Information
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Community Name</Label>
+                <Label htmlFor="name" className="text-slate-300">
+                  Community Name
+                </Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">f/</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400">f/</span>
                   <Input
                     id="name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="pl-8"
+                    className="pl-8 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20"
                     maxLength={50}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-slate-300">
+                  Description
+                </Label>
                 <Textarea
                   id="description"
                   value={description}
@@ -618,24 +627,24 @@ export default function ManageCommunityPage() {
                   rows={6}
                   maxLength={2000}
                   placeholder="Describe your community... You can use line breaks and formatting."
-                  className="resize-none"
+                  className="resize-none bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20"
                 />
-                <p className="text-xs text-gray-500">{description.length}/2000 characters</p>
+                <p className="text-xs text-slate-400">{description.length}/2000 characters</p>
               </div>
             </CardContent>
           </Card>
 
           {/* Tags */}
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle>Tags</CardTitle>
-              <CardDescription>Select tags that describe your community</CardDescription>
+              <CardTitle className="text-white">Tags</CardTitle>
+              <CardDescription className="text-slate-400">Select tags that describe your community</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {selectedTags.length > 0 && (
-                <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg">
+                <div className="flex flex-wrap gap-2 p-3 bg-slate-700/50 rounded-lg">
                   {selectedTags.map((tag) => (
-                    <Badge key={tag} variant="default" className="gap-1">
+                    <Badge key={tag} variant="default" className="gap-1 bg-blue-600 hover:bg-blue-700 text-white">
                       {tag}
                       <button
                         type="button"
@@ -656,8 +665,8 @@ export default function ManageCommunityPage() {
                     variant={selectedTags.includes(tag) ? "default" : "outline"}
                     className={`cursor-pointer p-2 text-center justify-center transition-all hover:scale-105 ${
                       selectedTags.includes(tag)
-                        ? "bg-orange-600 hover:bg-orange-700"
-                        : "hover:bg-orange-50 hover:border-orange-300"
+                        ? "bg-blue-600 hover:bg-blue-700 text-white"
+                        : "border-slate-600 text-slate-300 hover:bg-slate-700 hover:border-blue-500 hover:text-white"
                     }`}
                     onClick={() => toggleTag(tag)}
                   >
@@ -669,22 +678,22 @@ export default function ManageCommunityPage() {
           </Card>
 
           {/* Rules */}
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle>Community Rules</CardTitle>
-              <CardDescription>Set guidelines for your community members</CardDescription>
+              <CardTitle className="text-white">Community Rules</CardTitle>
+              <CardDescription className="text-slate-400">Set guidelines for your community members</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {rules.length > 0 && (
                 <div className="space-y-2">
                   {rules.map((rule, index) => (
-                    <div key={index} className="flex items-start gap-2 p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-500 mt-0.5">{index + 1}.</span>
-                      <span className="text-sm flex-1 whitespace-pre-wrap">{rule}</span>
+                    <div key={index} className="flex items-start gap-2 p-3 bg-slate-700/50 rounded-lg">
+                      <span className="text-sm font-medium text-slate-400 mt-0.5">{index + 1}.</span>
+                      <span className="text-sm flex-1 whitespace-pre-wrap text-slate-300">{rule}</span>
                       <button
                         type="button"
                         onClick={() => removeRule(index)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-red-400 hover:text-red-300"
                       >
                         <X className="h-4 w-4" />
                       </button>
@@ -699,8 +708,15 @@ export default function ManageCommunityPage() {
                   onChange={(e) => setNewRule(e.target.value)}
                   placeholder="Add a community rule..."
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addRule())}
+                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20"
                 />
-                <Button type="button" onClick={addRule} variant="outline" size="sm">
+                <Button
+                  type="button"
+                  onClick={addRule}
+                  variant="outline"
+                  size="sm"
+                  className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white bg-transparent"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
@@ -708,21 +724,23 @@ export default function ManageCommunityPage() {
           </Card>
 
           {/* Social Links */}
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle>Social Links</CardTitle>
-              <CardDescription>Add social media or website links for your community</CardDescription>
+              <CardTitle className="text-white">Social Links</CardTitle>
+              <CardDescription className="text-slate-400">
+                Add social media or website links for your community
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {socialLinks.map((link, index) => (
                 <div key={index} className="flex gap-2">
                   <Select value={link.platform} onValueChange={(value) => updateSocialLink(index, "platform", value)}>
-                    <SelectTrigger className="w-32">
+                    <SelectTrigger className="w-32 bg-slate-700/50 border-slate-600 text-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-slate-800 border-slate-700">
                       {ALLOWED_PLATFORMS.map((platform) => (
-                        <SelectItem key={platform} value={platform}>
+                        <SelectItem key={platform} value={platform} className="text-slate-300 hover:text-white">
                           {platform.charAt(0).toUpperCase() + platform.slice(1)}
                         </SelectItem>
                       ))}
@@ -732,14 +750,14 @@ export default function ManageCommunityPage() {
                     value={link.url}
                     onChange={(e) => updateSocialLink(index, "url", e.target.value)}
                     placeholder="https://..."
-                    className="flex-1"
+                    className="flex-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20"
                   />
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={() => removeSocialLink(index)}
-                    className="px-2"
+                    className="px-2 border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white bg-transparent"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -751,7 +769,7 @@ export default function ManageCommunityPage() {
                 onClick={addSocialLink}
                 variant="outline"
                 size="sm"
-                className="gap-2 bg-transparent"
+                className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
               >
                 <Plus className="h-4 w-4" />
                 Add Social Link
@@ -760,14 +778,14 @@ export default function ManageCommunityPage() {
           </Card>
 
           {error && (
-            <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+            <Alert variant="destructive" className="bg-red-900/20 border-red-500/50">
+              <AlertDescription className="text-red-300">{error}</AlertDescription>
             </Alert>
           )}
 
           {success && (
-            <Alert className="border-green-200 bg-green-50">
-              <AlertDescription className="text-green-800">{success}</AlertDescription>
+            <Alert className="border-green-500/50 bg-green-900/20">
+              <AlertDescription className="text-green-300">{success}</AlertDescription>
             </Alert>
           )}
         </div>

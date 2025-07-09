@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -10,51 +10,45 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { MessageSquare, ArrowLeft, Upload, Trash2, Plus, X, Loader2 } from "lucide-react"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { ArrowLeft, Save, Upload, Trash2, Loader2 } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 
-interface SocialLink {
-  platform: string
-  url: string
-}
-
-interface ProfileData {
+interface UserProfile {
   user_id: number
   username: string
   display_name: string
-  bio: string
+  bio: string | null
   profile_picture_url: string | null
-  social_links: SocialLink[]
 }
-
-const ALLOWED_PLATFORMS = ["twitter", "youtube", "spotify", "discord", "roblox", "custom"]
 
 export default function EditProfilePage() {
   const params = useParams()
   const router = useRouter()
-  const userId = params.userId as string
-  const { user: currentUser } = useCurrentUser()
-
-  const [profile, setProfile] = useState<ProfileData | null>(null)
-  const [displayName, setDisplayName] = useState("")
-  const [bio, setBio] = useState("")
-  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([])
+  const userId = Number.parseInt(params.userId as string)
+  const { user, loading: userLoading } = useCurrentUser()
+  const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
 
+  // Form state
+  const [displayName, setDisplayName] = useState("")
+  const [bio, setBio] = useState("")
+
   useEffect(() => {
-    if (currentUser && currentUser.user_id.toString() !== userId) {
-      router.push("/dashboard")
+    if (user && user.user_id !== userId) {
+      router.push(`/profile/${userId}`)
       return
     }
-    fetchProfile()
-  }, [currentUser, userId, router])
+
+    if (user) {
+      fetchProfile()
+    }
+  }, [user, userId, router])
 
   const fetchProfile = async () => {
     try {
@@ -70,28 +64,16 @@ export default function EditProfilePage() {
         },
       })
 
-      if (response.ok) {
-        const data = await response.json()
-        setProfile(data)
-        setDisplayName(data.display_name)
-        setBio(data.bio || "")
-        setSocialLinks(data.social_links || [])
-      } else if (response.status === 404) {
-        // Profile doesn't exist, set defaults for creation
-        setProfile({
-          user_id: Number.parseInt(userId),
-          username: currentUser?.username || "",
-          display_name: currentUser?.username || "",
-          bio: "",
-          profile_picture_url: null,
-          social_links: [],
-        })
-        setDisplayName(currentUser?.username || "")
-        setBio("")
-        setSocialLinks([])
+      if (!response.ok) {
+        throw new Error("Failed to fetch profile")
       }
+
+      const data = await response.json()
+      setProfile(data)
+      setDisplayName(data.display_name || "")
+      setBio(data.bio || "")
     } catch (err) {
-      setError("Failed to load profile")
+      setError(err instanceof Error ? err.message : "Failed to load profile")
     } finally {
       setLoading(false)
     }
@@ -102,94 +84,45 @@ export default function EditProfilePage() {
     setSuccess("")
     setSaving(true)
 
-    if (displayName.length < 3) {
-      setError("Display name must be at least 3 characters long")
-      setSaving(false)
-      return
-    }
-
-    // Validate social links
-    for (const link of socialLinks) {
-      if (!link.platform || !link.url) {
-        setError("All social links must have both platform and URL")
-        setSaving(false)
-        return
-      }
-      if (!ALLOWED_PLATFORMS.includes(link.platform.toLowerCase())) {
-        setError(`Invalid platform: ${link.platform}. Allowed platforms: ${ALLOWED_PLATFORMS.join(", ")}`)
-        setSaving(false)
-        return
-      }
-    }
-
     try {
       const token = localStorage.getItem("access_token")
-      if (!token) {
-        router.push("/login")
-        return
-      }
+      if (!token) return
 
-      // Ensure social links have lowercase platform names
-      const normalizedSocialLinks = socialLinks.map((link) => ({
-        ...link,
-        platform: link.platform.toLowerCase(),
-      }))
-
-      const profileData = {
-        display_name: displayName,
-        bio: bio || null,
-        social_links: normalizedSocialLinks,
-      }
-
-      let response
-      if (profile && profile.display_name) {
-        // Update existing profile
-        response = await fetch(`https://api.loryx.lol/users/${userId}/profile`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(profileData),
-        })
-      } else {
-        // Create new profile
-        response = await fetch(`https://api.loryx.lol/users/${userId}/profile`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(profileData),
-        })
-      }
+      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          display_name: displayName,
+          bio: bio,
+        }),
+      })
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.detail || "Failed to save profile")
+        throw new Error(errorData.detail || "Failed to update profile")
       }
 
-      const updatedProfile = await response.json()
-      setProfile(updatedProfile)
-      setSuccess("Profile saved successfully!")
+      setSuccess("Profile updated successfully!")
+      fetchProfile()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save profile")
+      setError(err instanceof Error ? err.message : "Failed to update profile")
     } finally {
       setSaving(false)
     }
   }
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePictureUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       setError("Please select an image file")
       return
     }
 
-    // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
       setError("Image must be smaller than 5MB")
       return
@@ -200,15 +133,12 @@ export default function EditProfilePage() {
 
     try {
       const token = localStorage.getItem("access_token")
-      if (!token) {
-        router.push("/login")
-        return
-      }
+      if (!token) return
 
       const formData = new FormData()
       formData.append("file", file)
 
-      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile/picture`, {
+      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile-picture`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -218,31 +148,27 @@ export default function EditProfilePage() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.detail || "Failed to upload image")
+        throw new Error(errorData.detail || "Failed to upload picture")
       }
 
       const data = await response.json()
       setProfile((prev) => (prev ? { ...prev, profile_picture_url: data.profile_picture_url } : null))
       setSuccess("Profile picture updated successfully!")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to upload image")
+      setError(err instanceof Error ? err.message : "Failed to upload picture")
     } finally {
       setUploading(false)
     }
   }
 
-  const handleDeletePicture = async () => {
-    setError("")
+  const handlePictureDelete = async () => {
     setUploading(true)
 
     try {
       const token = localStorage.getItem("access_token")
-      if (!token) {
-        router.push("/login")
-        return
-      }
+      if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile/picture`, {
+      const response = await fetch(`https://api.loryx.lol/users/${userId}/profile-picture`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -251,208 +177,215 @@ export default function EditProfilePage() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.detail || "Failed to delete image")
+        throw new Error(errorData.detail || "Failed to delete picture")
       }
 
       setProfile((prev) => (prev ? { ...prev, profile_picture_url: null } : null))
       setSuccess("Profile picture deleted successfully!")
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete image")
+      setError(err instanceof Error ? err.message : "Failed to delete picture")
     } finally {
       setUploading(false)
     }
   }
 
-  const addSocialLink = () => {
-    setSocialLinks([...socialLinks, { platform: "twitter", url: "" }])
-  }
-
-  const removeSocialLink = (index: number) => {
-    setSocialLinks(socialLinks.filter((_, i) => i !== index))
-  }
-
-  const updateSocialLink = (index: number, field: "platform" | "url", value: string) => {
-    const updated = [...socialLinks]
-    updated[index] = { ...updated[index], [field]: value }
-    setSocialLinks(updated)
-  }
-
-  if (loading) {
+  if (userLoading || loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600 mx-auto mb-4"></div>
-          <p>Loading profile...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-white">Loading...</p>
         </div>
       </div>
     )
   }
 
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-slate-800 border-slate-700">
+          <CardContent className="pt-6">
+            <Alert variant="destructive" className="bg-red-900/20 border-red-500/50">
+              <AlertDescription className="text-red-300">Profile not found</AlertDescription>
+            </Alert>
+            <div className="mt-4 text-center">
+              <Link href="/dashboard">
+                <Button
+                  variant="outline"
+                  className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Back to Dashboard
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-slate-900">
+      <header className="bg-slate-800 border-b border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
               <Link href={`/profile/${userId}`}>
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className="gap-2 text-slate-300 hover:text-white hover:bg-slate-700">
                   <ArrowLeft className="h-4 w-4" />
                   Back to Profile
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-orange-600" />
-                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
+                <img src="/logo.png" alt="Afterfrag" className="h-8 w-8" />
+                <span className="text-lg font-bold text-white">Afterfrag</span>
               </div>
             </div>
+            <Button onClick={handleSave} disabled={saving} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+              {saving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
           </div>
         </div>
       </header>
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Edit Profile</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Profile Picture */}
-            <div className="space-y-4">
-              <Label>Profile Picture</Label>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Edit Profile</h1>
+          <p className="text-slate-400">Update your profile information</p>
+        </div>
+
+        <div className="space-y-6">
+          {/* Profile Picture */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Profile Picture</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={profile?.profile_picture_url || undefined} alt={displayName} />
-                  <AvatarFallback className="text-xl">{displayName.charAt(0).toUpperCase()}</AvatarFallback>
+                  <AvatarImage src={profile.profile_picture_url || undefined} alt={profile.display_name} />
+                  <AvatarFallback className="text-xl bg-slate-700 text-white">
+                    {profile.display_name?.charAt(0)?.toUpperCase() ||
+                      profile.username?.charAt(0)?.toUpperCase() ||
+                      "?"}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="space-y-2">
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2 bg-transparent"
-                      disabled={uploading}
-                      onClick={() => document.getElementById("picture-upload")?.click()}
-                    >
-                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-                      Upload
-                    </Button>
-                    {profile?.profile_picture_url && (
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePictureUpload}
+                      className="hidden"
+                      id="profile-picture"
+                    />
+                    <label htmlFor="profile-picture">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="gap-2 bg-transparent"
+                        className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
                         disabled={uploading}
-                        onClick={handleDeletePicture}
+                        asChild
+                      >
+                        <span>
+                          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                          Upload Picture
+                        </span>
+                      </Button>
+                    </label>
+                    {profile.profile_picture_url && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2 bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+                        disabled={uploading}
+                        onClick={handlePictureDelete}
                       >
                         <Trash2 className="h-4 w-4" />
-                        Delete
+                        Delete Picture
                       </Button>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500">JPG, PNG or GIF. Max 5MB.</p>
+                  <p className="text-xs text-slate-400">Square image recommended, JPG or PNG, max 5MB</p>
                 </div>
-                <input
-                  id="picture-upload"
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleFileUpload}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Basic Information */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Basic Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-slate-300">
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  value={profile.username}
+                  disabled
+                  className="bg-slate-700/50 border-slate-600 text-slate-400"
                 />
+                <p className="text-xs text-slate-400">Username cannot be changed</p>
               </div>
-            </div>
 
-            {/* Display Name */}
-            <div className="space-y-2">
-              <Label htmlFor="displayName">Display Name</Label>
-              <Input
-                id="displayName"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Your display name"
-                minLength={3}
-                required
-              />
-            </div>
-
-            {/* Bio */}
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Tell us about yourself... You can use line breaks and formatting."
-                rows={4}
-                maxLength={500}
-                className="resize-none"
-              />
-              <p className="text-xs text-gray-500">{bio.length}/500 characters</p>
-            </div>
-
-            {/* Social Links */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label>Social Links</Label>
-                <Button variant="outline" size="sm" onClick={addSocialLink} className="gap-2 bg-transparent">
-                  <Plus className="h-4 w-4" />
-                  Add Link
-                </Button>
+              <div className="space-y-2">
+                <Label htmlFor="displayName" className="text-slate-300">
+                  Display Name
+                </Label>
+                <Input
+                  id="displayName"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20"
+                  maxLength={50}
+                />
+                <p className="text-xs text-slate-400">{displayName.length}/50 characters</p>
               </div>
-              {socialLinks.map((link, index) => (
-                <div key={index} className="flex gap-2">
-                  <Select value={link.platform} onValueChange={(value) => updateSocialLink(index, "platform", value)}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ALLOWED_PLATFORMS.map((platform) => (
-                        <SelectItem key={platform} value={platform}>
-                          {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    value={link.url}
-                    onChange={(e) => updateSocialLink(index, "url", e.target.value)}
-                    placeholder="https://..."
-                    className="flex-1"
-                  />
-                  <Button variant="outline" size="sm" onClick={() => removeSocialLink(index)} className="px-2">
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
 
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+              <div className="space-y-2">
+                <Label htmlFor="bio" className="text-slate-300">
+                  Bio
+                </Label>
+                <Textarea
+                  id="bio"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  placeholder="Tell us about yourself..."
+                  rows={4}
+                  maxLength={500}
+                  className="resize-none bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-blue-500 focus:ring-blue-500/20"
+                />
+                <p className="text-xs text-slate-400">{bio.length}/500 characters</p>
+              </div>
+            </CardContent>
+          </Card>
 
-            {success && (
-              <Alert className="border-green-200 bg-green-50">
-                <AlertDescription className="text-green-800">{success}</AlertDescription>
-              </Alert>
-            )}
+          {error && (
+            <Alert variant="destructive" className="bg-red-900/20 border-red-500/50">
+              <AlertDescription className="text-red-300">{error}</AlertDescription>
+            </Alert>
+          )}
 
-            <div className="flex gap-4">
-              <Button onClick={handleSave} disabled={saving} className="flex-1">
-                {saving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save Changes"
-                )}
-              </Button>
-              <Link href={`/profile/${userId}`}>
-                <Button variant="outline">Cancel</Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+          {success && (
+            <Alert className="border-green-500/50 bg-green-900/20">
+              <AlertDescription className="text-green-300">{success}</AlertDescription>
+            </Alert>
+          )}
+        </div>
       </main>
     </div>
   )

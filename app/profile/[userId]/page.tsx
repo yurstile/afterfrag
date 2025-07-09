@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { MessageSquare, ArrowLeft, User, Edit, ExternalLink, Calendar, Globe } from "lucide-react"
+import { ArrowLeft, User, Edit, ExternalLink, Calendar, Globe } from "lucide-react"
 import { useCurrentUser } from "@/hooks/use-current-user"
 import { formatDate } from "@/utils/date-utils"
 import { RecentActivityCard } from "@/components/recent-activity-card"
@@ -123,25 +123,39 @@ export default function UserProfilePage() {
   const isOwnProfile = currentUser.user_id === userId
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-red-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+      <header className="bg-slate-800/90 backdrop-blur-sm shadow-lg border-b border-blue-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 text-blue-300 hover:text-blue-100 hover:bg-blue-800/50"
+                >
                   <ArrowLeft className="h-4 w-4" />
                   Back
                 </Button>
               </Link>
               <div className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6 text-orange-600" />
-                <span className="text-lg font-bold text-orange-600">Afterfrag</span>
+                <img
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-wygsedFsbzUPP0F7Z988Qqr7NPP93N.png"
+                  alt="Logo"
+                  className="h-6 w-6"
+                />
+                <span className="text-lg font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                  Afterfrag
+                </span>
               </div>
             </div>
             {isOwnProfile && (
               <Link href={`/profile/${userId}/edit`}>
-                <Button variant="outline" size="sm" className="gap-2 bg-transparent">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 border-blue-500/50 text-blue-300 hover:bg-blue-800/50 hover:border-blue-400 bg-transparent"
+                >
                   <Edit className="h-4 w-4" />
                   Edit Profile
                 </Button>
@@ -155,25 +169,34 @@ export default function UserProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Info */}
           <div className="lg:col-span-2">
-            <Card>
+            <Card className="bg-slate-800/50 backdrop-blur-sm border-blue-500/20 shadow-xl shadow-blue-500/10">
               <CardHeader>
                 <div className="flex items-start gap-6">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src={profile.profile_picture_url || undefined} alt={profile.display_name} />
-                    <AvatarFallback className="text-2xl">{profile.display_name.charAt(0).toUpperCase()}</AvatarFallback>
-                  </Avatar>
+                  <div className="relative">
+                    <Avatar className="h-24 w-24 ring-2 ring-blue-500/50 shadow-lg shadow-blue-500/25">
+                      <AvatarImage src={profile.profile_picture_url || undefined} alt={profile.display_name} />
+                      <AvatarFallback className="text-2xl bg-gradient-to-br from-blue-600 to-cyan-600 text-white">
+                        {profile.display_name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {profile.is_online && (
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-slate-800 shadow-lg animate-pulse" />
+                    )}
+                  </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <CardTitle className="text-2xl">{profile.display_name}</CardTitle>
+                      <CardTitle className="text-2xl text-white">{profile.display_name}</CardTitle>
                       {profile.is_online && (
-                        <Badge variant="default" className="bg-green-600">
+                        <Badge className="bg-green-500/20 text-green-400 border-green-500/50 animate-pulse">
                           Online
                         </Badge>
                       )}
                     </div>
-                    <CardDescription className="text-base mb-3">@{profile.username}</CardDescription>
-                    {profile.bio && <p className="text-gray-700 whitespace-pre-wrap mb-4">{profile.bio}</p>}
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <CardDescription className="text-base text-blue-300 mb-3">@{profile.username}</CardDescription>
+                    {profile.bio && (
+                      <p className="text-slate-300 whitespace-pre-wrap mb-4 leading-relaxed">{profile.bio}</p>
+                    )}
+                    <div className="flex items-center gap-4 text-sm text-slate-400">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
                         Joined {formatDate(profile.created_at)}
@@ -187,7 +210,7 @@ export default function UserProfilePage() {
               </CardHeader>
               {profile.social_links.length > 0 && (
                 <CardContent>
-                  <h4 className="font-semibold mb-3">Social Links</h4>
+                  <h4 className="font-semibold mb-3 text-white">Social Links</h4>
                   <div className="flex flex-wrap gap-2">
                     {profile.social_links.map((link, index) => (
                       <a
@@ -195,7 +218,7 @@ export default function UserProfilePage() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm transition-colors"
+                        className="inline-flex items-center gap-2 px-3 py-2 bg-blue-800/30 hover:bg-blue-700/40 border border-blue-500/30 rounded-lg text-sm transition-all duration-200 text-blue-300 hover:text-blue-100 hover:shadow-lg hover:shadow-blue-500/20"
                       >
                         <Globe className="h-4 w-4" />
                         <span>{link.platform}</span>
@@ -210,34 +233,35 @@ export default function UserProfilePage() {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Recent Activity */}
-            <RecentActivityCard userId={userId} />
-
-            {/* Profile Stats */}
-            <Card>
+            {/* Profile Stats Card */}
+            <Card className="bg-slate-800/50 backdrop-blur-sm border-blue-500/20 shadow-xl shadow-blue-500/10">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
+                <CardTitle className="flex items-center gap-2 text-white">
+                  <User className="h-5 w-5 text-blue-400" />
                   Profile Stats
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Member since</span>
-                  <span>{formatDate(profile.created_at)}</span>
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex justify-between items-center py-2 border-b border-slate-700/50">
+                  <span className="text-slate-400">Member since</span>
+                  <span className="text-slate-200">{formatDate(profile.created_at)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Status</span>
-                  <span className={profile.is_online ? "text-green-600" : "text-gray-500"}>
+                <div className="flex justify-between items-center py-2">
+                  <span className="text-slate-400">Status</span>
+                  <span
+                    className={`flex items-center gap-2 ${profile.is_online ? "text-green-400" : "text-slate-400"}`}
+                  >
+                    <div
+                      className={`w-2 h-2 rounded-full ${profile.is_online ? "bg-green-500 animate-pulse" : "bg-slate-500"}`}
+                    />
                     {profile.is_online ? "Online" : "Offline"}
                   </span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Profile updated</span>
-                  <span>{formatDate(profile.updated_at)}</span>
-                </div>
               </CardContent>
             </Card>
+
+            {/* Recent Activity */}
+            <RecentActivityCard userId={userId} />
           </div>
         </div>
       </main>

@@ -1,54 +1,68 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Heart, ChevronDown } from 'lucide-react'
+import { Heart, HeartOff } from "lucide-react"
 import { useLikeStatus } from "@/hooks/use-like-status"
 
 interface LikeButtonProps {
-  itemId: number
-  itemType: "post" | "comment"
+  postId: number
   initialLikeCount: number
-  onLikeChange?: (newCount: number) => void
+  onLike?: (value: 1 | -1) => void
 }
 
-export function LikeButton({ itemId, itemType, initialLikeCount, onLikeChange }: LikeButtonProps) {
-  const { likeCount, userLike, loading, handleLike } = useLikeStatus({
-    itemId,
-    itemType,
-    initialLikeCount,
-  })
+export function LikeButton({ postId, initialLikeCount, onLike }: LikeButtonProps) {
+  const { userLike, loading, toggleLike } = useLikeStatus(postId)
 
-  const onLikeClick = async (value: 1 | -1) => {
-    await handleLike(value)
-    if (onLikeChange) {
-      onLikeChange(likeCount)
+  const handleLike = async () => {
+    const change = await toggleLike(1)
+    if (change !== 0 && onLike) {
+      onLike(change as 1 | -1)
     }
   }
 
+  const handleDislike = async () => {
+    const change = await toggleLike(-1)
+    if (change !== 0 && onLike) {
+      onLike(change as 1 | -1)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-slate-400">
+        <div className="w-8 h-8 bg-slate-700 rounded animate-pulse" />
+        <span>{initialLikeCount}</span>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-2">
       <Button
         variant="ghost"
         size="sm"
-        className={`gap-1 h-8 px-2 transition-colors ${
-          userLike === 1 ? "text-red-500 hover:text-red-600" : "hover:text-red-500"
+        onClick={handleLike}
+        className={`gap-1 ${
+          userLike === 1
+            ? "text-red-400 hover:text-red-300 hover:bg-red-900/20"
+            : "text-slate-400 hover:text-red-400 hover:bg-red-900/20"
         }`}
-        onClick={() => onLikeClick(1)}
-        disabled={loading}
       >
-        <Heart className={`h-4 w-4 transition-all ${userLike === 1 ? "fill-current scale-110" : ""}`} />
-        {likeCount}
+        <Heart className={`h-4 w-4 ${userLike === 1 ? "fill-current" : ""}`} />
+        <span>{initialLikeCount}</span>
       </Button>
+
       <Button
         variant="ghost"
         size="sm"
-        className={`gap-1 h-8 px-2 transition-colors ${
-          userLike === -1 ? "text-blue-500 hover:text-blue-600" : "hover:text-blue-500"
+        onClick={handleDislike}
+        className={`gap-1 ${
+          userLike === -1
+            ? "text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
+            : "text-slate-400 hover:text-blue-400 hover:bg-blue-900/20"
         }`}
-        onClick={() => onLikeClick(-1)}
-        disabled={loading}
       >
-        <ChevronDown className={`h-4 w-4 transition-all ${userLike === -1 ? "scale-110" : ""}`} />
+        <HeartOff className={`h-4 w-4 ${userLike === -1 ? "fill-current" : ""}`} />
       </Button>
     </div>
   )

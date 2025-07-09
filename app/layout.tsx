@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google"
 import "./globals.css"
 import { OnlineStatusManager } from "@/components/online-status-manager"
 import { NotificationProvider } from "@/components/notification-provider"
@@ -11,7 +11,9 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "Afterfrag - Gaming Community Platform",
   description: "Join the ultimate gaming community platform",
-    generator: 'v0.dev'
+  icons: {
+    icon: "https://afterfrag.com/logo.png",
+  }
 }
 
 export default function RootLayout({
