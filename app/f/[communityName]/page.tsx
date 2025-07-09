@@ -96,7 +96,7 @@ export default function CommunityDetailPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}/is-member`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}/is-member`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -123,7 +123,7 @@ export default function CommunityDetailPage() {
         return
       }
 
-      const response = await fetch(`https://api.loryx.lol/communities/f/${communityName}`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/f/${communityName}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -154,7 +154,7 @@ export default function CommunityDetailPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/posts/community/${community.id}?sort=${sortBy}&limit=20`, {
+      const response = await fetch(`https://app.afterfrag.com/posts/community/${community.id}?sort=${sortBy}&limit=20`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -178,7 +178,7 @@ export default function CommunityDetailPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}/post-tags`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}/post-tags`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -201,7 +201,7 @@ export default function CommunityDetailPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}/join`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}/join`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -248,7 +248,7 @@ export default function CommunityDetailPage() {
       const token = localStorage.getItem("access_token")
       if (!token) return
 
-      const response = await fetch(`https://api.loryx.lol/communities/${community.id}/leave`, {
+      const response = await fetch(`https://app.afterfrag.com/communities/${community.id}/leave`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -562,7 +562,7 @@ export default function CommunityDetailPage() {
                             const token = localStorage.getItem("access_token")
                             if (!token) return
 
-                            await fetch(`https://api.loryx.lol/posts/${post.id}/like`, {
+                            await fetch(`https://app.afterfrag.com/posts/${post.id}/like`, {
                               method: "POST",
                               headers: {
                                 "Content-Type": "application/json",
@@ -581,7 +581,7 @@ export default function CommunityDetailPage() {
                             const token = localStorage.getItem("access_token")
                             if (!token) return
 
-                            const response = await fetch(`https://api.loryx.lol/posts/${post.id}`, {
+                            const response = await fetch(`https://app.afterfrag.com/posts/${post.id}`, {
                               method: "DELETE",
                               headers: {
                                 Authorization: `Bearer ${token}`,
